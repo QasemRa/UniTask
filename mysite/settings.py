@@ -99,3 +99,18 @@ LOGIN_URL = '/'
 LOGIN_REDIRECT_URL = '/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+# كود إنشاء حساب المدير تلقائياً عند التشغيل
+from django.db.models.signals import post_migrate
+from django.dispatch import receiver
+from django.contrib.auth import get_user_model
+
+@receiver(post_migrate)
+def create_admin_user(sender, **kwargs):
+    User = get_user_model()
+    if not User.objects.filter(username='1').exists():
+        User.objects.create_superuser(
+            username='1',
+            email='admin@example.com',
+            password='1'
+        )
+        print("Done! Superuser '1' with password '1' created successfully.")
