@@ -755,12 +755,15 @@ tr:last-child td {
 }
 
 .login-card {
-    background: transparent;
-    border-radius: var(--radius-xl);
-    padding: var(--spacing-xl);
-    box-shadow: none;
+    background-color: #ffffff !important; /* اللون الأبيض إجباري */
+    border-radius: 20px !important;
+    padding: 40px !important;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2) !important;
     width: 100%;
     max-width: 450px;
+    display: block !important;
+    position: relative;
+    z-index: 10;
 }
 
 .login-header {

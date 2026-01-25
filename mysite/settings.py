@@ -1,16 +1,17 @@
 import os
 from pathlib import Path
-import dj_database_url
+import dj_database_url # ضروري لربط قاعدة بيانات Render
 
+# المسار الرئيسي للمشروع
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = os.environ.get(
-    'SECRET_KEY',
-    'django-insecure-m37%()gywdj11$6g-$svw%+&s5mx(hxgvkk9$blw%j5qo02u^&'
-)
+# الأمان: المفتاح السري يُقرأ من البيئة في Render أو يستخدم الافتراضي محلياً
+SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-m37%()gywdj11$6g-$svw%+&s5mx(hxgvkk9$blw%j5qo02u^&')
 
-DEBUG = True
+# الرفع يتطلب DEBUG = False
+DEBUG = os.environ.get('DEBUG', 'False').lower() == 'true'
 
+# السماح لجميع الروابط بالوصول (أو حدد رابط Render الخاص بك)
 ALLOWED_HOSTS = ['*']
 
 INSTALLED_APPS = [
@@ -20,12 +21,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'myapp',
+    'myapp', # تأكد من اسم الـ App الخاص بك
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',  # مهم للـ static
+    'whitenoise.middleware.WhiteNoiseMiddleware', # يجب أن يكون هنا لتقديم ملفات الـ Static
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -34,15 +35,16 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'mysite.urls'
+ROOT_URLCONF = 'mysite.urls' # تأكد من اسم مجلد المشروع الأساسي
 
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates'],   # الأفضل هيج
+        'DIRS': [BASE_DIR / 'templates'], 
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
+                'django.template.context_processors.debug',
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
@@ -53,6 +55,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'mysite.wsgi.application'
 
+# قاعدة البيانات: سحب إعدادات PostgreSQL من Render تلقائياً أو استخدام SQLite محلياً
 DATABASES = {
     'default': dj_database_url.config(
         default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}",
@@ -72,29 +75,25 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_TZ = True
 
+# ==========================================================
+# إعدادات الملفات الثابتة والميديا (Static & Media)
+# ==========================================================
 
-# =========================
-# STATIC FILES (CSS/JS)
-# =========================
 STATIC_URL = 'static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
-
-
-
-# هذا المكان اللي ينحفظ بيه ناتج collectstatic (ضروري للرفع)
+# المجلد الذي سيجمع Render فيه الملفات عند تنفيذ collectstatic
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
-# WhiteNoise
+# تفعيل WhiteNoise لضغط وتقديم الملفات الثابتة
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
+# مجلد الـ Static الرئيسي في مشروعك
+STATICFILES_DIRS = [
+    BASE_DIR / 'static',
+]
 
-# =========================
-# MEDIA FILES
-# =========================
+# إعدادات صور الميديا
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
-
 
 LOGIN_URL = '/'
 LOGIN_REDIRECT_URL = '/'
