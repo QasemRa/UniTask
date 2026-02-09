@@ -1,0 +1,106 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}رفع واجب - نظام الجامعة{% endblock %}
+
+{% block content %}
+    <header class="header">
+        <div class="header-content">
+            <h1>🎓 نظام الجامعة</h1>
+            <div class="header-user">
+                <div class="user-info">
+                    <div class="user-avatar">{{ user.username|slice:":1"|upper }}</div>
+                    <span>مرحباً، {{ user.username }}</span>
+                </div>
+                <a href="{% url 'logout' %}" class="logout-btn">تسجيل الخروج</a>
+            </div>
+        </div>
+    </header>
+
+    <div class="dashboard-layout">
+        <aside class="sidebar">
+            <ul class="sidebar-menu">
+                <li>
+                    <a href="{% url 'student' %}">
+                        <span class="icon">📊</span>
+                        <span>لوحة التحكم</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'student_subjects' %}">
+                        <span class="icon">📚</span>
+                        <span>موادي الدراسية</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'student_upload' %}" class="active">
+                        <span class="icon">📤</span>
+                        <span>رفع واجب</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'student_submissions' %}">
+                        <span class="icon">📝</span>
+                        <span>واجباتي</span>
+                    </a>
+                </li>
+            </ul>
+        </aside>
+
+        <main class="main-content">
+            <h1 class="page-title">رفع واجب جديد</h1>
+
+            {% if messages %}
+            <div style="margin-bottom: 2rem;">
+                {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}" style="padding: 1rem; background: {% if message.tags == 'success' %}rgba(76, 175, 80, 0.1){% elif message.tags == 'error' %}rgba(244, 67, 54, 0.1){% else %}rgba(255, 152, 0, 0.1){% endif %}; border-radius: 8px; margin-bottom: 1rem; color: {% if message.tags == 'success' %}#4caf50{% elif message.tags == 'error' %}#f44336{% else %}#ff9800{% endif %};">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            {% if enrollments %}
+            <section class="upload-section">
+                <div class="upload-card">
+                    <h2>📤 رفع واجب جديد</h2>
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        
+                        <div class="form-group">
+                            <label for="id_subject">المادة الدراسية:</label>
+                            {{ form.subject }}
+                            {% if form.subject.errors %}
+                                <div style="color: #f44336; font-size: 0.9rem; margin-top: 0.5rem;">
+                                    {{ form.subject.errors }}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="id_file">ملف الواجب (PDF فقط - حد أقصى 10 ميجابايت):</label>
+                            {{ form.file }}
+                            {% if form.file.errors %}
+                                <div style="color: #f44336; font-size: 0.9rem; margin-top: 0.5rem;">
+                                    {{ form.file.errors }}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <button type="submit" class="btn btn-success">✓ رفع الواجب</button>
+                    </form>
+                </div>
+            </section>
+            {% else %}
+            <div class="upload-card">
+                <div style="text-align: center; padding: 2rem; color: #757575;">
+                    <div style="font-size: 3rem; margin-bottom: 1rem;">📚</div>
+                    <h3 style="color: #212121; margin-bottom: 0.5rem;">لا توجد مواد مسجلة</h3>
+                    <p>لم يتم تسجيلك في أي مادة دراسية بعد. يرجى الاتصال بالإدارة لتسجيلك في المواد.</p>
+                </div>
+            </div>
+            {% endif %}
+
+        </main>
+    </div>
+{% endblock %}

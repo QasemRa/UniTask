@@ -1,31 +1,5 @@
-/* ===========================================
-   PROFESSIONAL ACADEMIC UNIVERSITY THEME
-   Google Classroom Inspired Design
-   =========================================== */
-
-/* ===========================================
-   CSS TABLE OF CONTENTS
-   ===========================================
-   1. CSS Variables & Reset
-   2. Global Styles
-   3. Header & Navigation
-   4. Sidebar Navigation
-   5. Main Content Layout
-   6. Dashboard Cards & Components
-   7. Form Styles & Inputs
-   8. Upload Section (Professional)
-   9. Table Styles
-   10. Login Page
-   11. Responsive Design
-   12. Animations & Utilities
-   =========================================== */
-
-/* ===========================================
-   1. CSS VARIABLES & RESET
-   =========================================== */
-
 :root {
-    /* Color Palette */
+   
     --primary-navy: #1a237e;
     --secondary-blue: #0d47a1;
     --accent-blue: #1976d2;
@@ -40,20 +14,20 @@
     --danger-red: #f44336;
     --hover-blue: #e3f2fd;
 
-    /* Spacing */
+  
     --spacing-xs: 0.5rem;
     --spacing-sm: 1rem;
     --spacing-md: 1.5rem;
     --spacing-lg: 2rem;
     --spacing-xl: 3rem;
 
-    /* Border Radius */
+
     --radius-sm: 4px;
     --radius-md: 8px;
     --radius-lg: 12px;
     --radius-xl: 16px;
 
-    /* Shadows */
+    
     --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.12);
     --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
     --shadow-lg: 0 10px 20px rgba(0, 0, 0, 0.15);
@@ -66,21 +40,16 @@
     box-sizing: border-box;
 }
 
-/* ===========================================
-   2. GLOBAL STYLES
-   =========================================== */
 
 body {
-    font-family: 'Segoe UI', 'Roboto', 'Arial', sans-serif;
+    font-family: 'Segoe UI', 'Roboto', 'Arial', 'Noto Sans Arabic', sans-serif;
     background-color: var(--background-gray);
     color: var(--text-dark);
     direction: rtl;
     line-height: 1.6;
 }
 
-/* ===========================================
-   3. HEADER & NAVIGATION
-   =========================================== */
+
 
 .header {
     background: linear-gradient(135deg, var(--primary-navy) 0%, var(--secondary-blue) 100%);
@@ -147,9 +116,7 @@ body {
     box-shadow: var(--shadow-sm);
 }
 
-/* ===========================================
-   4. SIDEBAR NAVIGATION
-   =========================================== */
+
 
 .dashboard-layout {
     display: flex;
@@ -199,9 +166,7 @@ body {
     font-size: 1.2rem;
 }
 
-/* ===========================================
-   5. MAIN CONTENT LAYOUT
-   =========================================== */
+
 
 .main-content {
     flex: 1;
@@ -216,9 +181,7 @@ body {
     font-weight: 600;
 }
 
-/* ===========================================
-   6. DASHBOARD CARDS & COMPONENTS
-   =========================================== */
+
 
 .subjects-grid {
     display: grid;
@@ -296,7 +259,6 @@ body {
     gap: var(--spacing-sm);
 }
 
-/* Button Components */
 .btn {
     padding: var(--spacing-sm) var(--spacing-md);
     border: none;
@@ -309,6 +271,8 @@ body {
     align-items: center;
     justify-content: center;
     gap: var(--spacing-xs);
+    min-height: 44px;
+    min-width: 44px;
 }
 
 .btn-primary {
@@ -342,7 +306,7 @@ body {
     background: #45a049;
 }
 
-/* Assignment Cards */
+
 .assignments-section {
     margin-top: var(--spacing-xl);
 }
@@ -433,9 +397,7 @@ body {
     margin-top: var(--spacing-md);
 }
 
-/* ===========================================
-   7. FORM STYLES & INPUTS
-   =========================================== */
+
 
 .form-group {
     margin-bottom: var(--spacing-lg);
@@ -456,6 +418,10 @@ body {
     border-radius: var(--radius-md);
     font-size: 1rem;
     transition: all 0.3s ease;
+    min-height: 44px;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
 }
 
 .form-group select {
@@ -469,8 +435,6 @@ body {
     border-color: var(--accent-blue);
     box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.1);
 }
-
-/* Legacy Upload Card (for compatibility) */
 .upload-card {
     background: var(--card-white);
     border-radius: var(--radius-lg);
@@ -489,9 +453,7 @@ body {
     margin-top: var(--spacing-xl);
 }
 
-/* ===========================================
-   8. PROFESSIONAL UPLOAD SECTION
-   =========================================== */
+
 
 .upload-container {
     background: var(--card-white);
@@ -688,9 +650,7 @@ body {
     font-weight: 500;
 }
 
-/* ===========================================
-   9. TABLE STYLES
-   =========================================== */
+
 
 .table-container {
     background: var(--card-white);
@@ -742,9 +702,7 @@ tr:last-child td {
     transform: translateY(-2px);
 }
 
-/* ===========================================
-   10. LOGIN PAGE
-   =========================================== */
+
 
 .login-container {
     display: flex;
@@ -755,7 +713,7 @@ tr:last-child td {
 }
 
 .login-card {
-    background-color: #ffffff !important; /* اللون الأبيض إجباري */
+    background-color: #ffffff !important; 
     border-radius: 20px !important;
     padding: 40px !important;
     box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2) !important;
@@ -819,19 +777,48 @@ tr:last-child td {
     margin-bottom: var(--spacing-sm);
 }
 
-/* ===========================================
-   11. RESPONSIVE DESIGN
-   =========================================== */
+
+
+
+@media (min-width: 1400px) {
+    .header-content,
+    .dashboard-layout {
+        max-width: 1600px;
+    }
+    
+    .subjects-grid {
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    }
+}
+
+@media (max-width: 1200px) {
+    .sidebar {
+        width: 240px;
+    }
+    
+    .subjects-grid {
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    }
+}
 
 @media (max-width: 1024px) {
+    .sidebar {
+        width: 220px;
+    }
+    
     .subjects-grid {
         grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    }
+    
+    .page-title {
+        font-size: 1.75rem;
     }
 }
 
 @media (max-width: 768px) {
     .dashboard-layout {
-        flex-direction: column;
+        flex-direction: row;
+        flex-wrap: wrap;
     }
 
     .sidebar {
@@ -839,22 +826,47 @@ tr:last-child td {
         height: auto;
         position: static;
         padding: var(--spacing-md);
+        order: 2;
+        background: var(--card-white);
+        box-shadow: var(--shadow-sm);
+        border-radius: var(--radius-lg);
+        margin-top: var(--spacing-md);
     }
 
     .sidebar-menu {
-        display: flex;
-        overflow-x: auto;
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
         gap: var(--spacing-xs);
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+    }
+
+    .sidebar-menu::-webkit-scrollbar {
+        display: none;
     }
 
     .sidebar-menu li {
         margin-bottom: 0;
+        flex-shrink: 0;
     }
 
     .sidebar-menu a {
         white-space: nowrap;
         border-right: none;
         border-bottom: 3px solid transparent;
+        min-width: 80px;
+        justify-content: center;
+        flex-direction: column;
+        padding: var(--spacing-sm);
+        font-size: 0.85rem;
+        text-align: center;
+    }
+
+    .sidebar-menu .icon {
+        font-size: 1.5rem;
+        margin-bottom: var(--spacing-xs);
     }
 
     .sidebar-menu a:hover,
@@ -865,23 +877,25 @@ tr:last-child td {
 
     .main-content {
         padding: var(--spacing-md);
+        order: 1;
+        width: 100%;
     }
 
     .subjects-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(2, 1fr);
+        gap: var(--spacing-md);
     }
 
     .header-content {
-        flex-direction: column;
+        flex-direction: row;
         gap: var(--spacing-sm);
-        text-align: center;
+        text-align: right;
     }
 
     .page-title {
         font-size: 1.5rem;
     }
 
-    /* Upload Section Responsive */
     .form-grid {
         grid-template-columns: 1fr;
         gap: var(--spacing-md);
@@ -904,9 +918,272 @@ tr:last-child td {
     }
 }
 
-/* ===========================================
-   12. ANIMATIONS & UTILITIES
-   =========================================== */
+@media (max-width: 480px) {
+    .dashboard-layout {
+        flex-direction: row;
+    }
+
+    .sidebar {
+        width: 30%;
+        min-width: 120px;
+        height: auto;
+        position: static;
+        padding: var(--spacing-sm);
+        order: 1;
+    }
+
+    .sidebar-menu {
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-xs);
+    }
+
+    .sidebar-menu li {
+        margin-bottom: var(--spacing-xs);
+    }
+
+    .sidebar-menu a {
+        white-space: nowrap;
+        border-right: 3px solid transparent;
+        border-bottom: none;
+        justify-content: flex-start;
+        flex-direction: row;
+        padding: var(--spacing-sm);
+        font-size: 0.8rem;
+        text-align: right;
+    }
+
+    .sidebar-menu .icon {
+        font-size: 1rem;
+        margin-bottom: 0;
+        margin-left: var(--spacing-xs);
+    }
+
+    .sidebar-menu a:hover,
+    .sidebar-menu a.active {
+        border-right-color: var(--accent-blue);
+        border-bottom: none;
+    }
+
+    .main-content {
+        padding: var(--spacing-sm);
+        order: 2;
+        width: 70%;
+    }
+
+    .subjects-grid {
+        grid-template-columns: 1fr;
+        gap: var(--spacing-sm);
+    }
+
+    .header {
+        padding: var(--spacing-sm) var(--spacing-md);
+    }
+
+    .header h1 {
+        font-size: 1.1rem;
+    }
+
+    .user-info span {
+        display: none;
+    }
+
+    .logout-btn {
+        padding: var(--spacing-xs) var(--spacing-sm);
+        font-size: 0.8rem;
+        min-height: 36px;
+    }
+
+    .page-title {
+        font-size: 1.1rem;
+        margin-bottom: var(--spacing-sm);
+    }
+
+    .assignment-card {
+        padding: var(--spacing-md);
+    }
+
+    .assignment-header {
+        flex-direction: column;
+        gap: var(--spacing-sm);
+    }
+
+    .assignment-meta {
+        flex-direction: column;
+        gap: var(--spacing-xs);
+    }
+
+    .assignment-actions {
+        flex-direction: column;
+    }
+
+    .btn {
+        width: 100%;
+        min-height: 48px;
+    }
+
+    .upload-card {
+        padding: var(--spacing-md);
+    }
+
+    .upload-header {
+        padding: var(--spacing-md);
+    }
+
+    .upload-icon-large {
+        font-size: 3rem;
+    }
+
+    .upload-title {
+        font-size: 1.25rem;
+    }
+
+    .upload-subtitle {
+        font-size: 0.9rem;
+    }
+
+    .file-input-label {
+        padding: var(--spacing-md);
+    }
+
+    .submit-button {
+        width: 100%;
+        padding: var(--spacing-md);
+        font-size: 1rem;
+        min-height: 52px;
+    }
+
+    .section-header {
+        flex-direction: column;
+        gap: var(--spacing-sm);
+        align-items: flex-start;
+    }
+
+    .section-title {
+        font-size: 1.25rem;
+    }
+
+    .stat-number {
+        font-size: 1.25rem;
+    }
+
+    .stat-label {
+        font-size: 0.75rem;
+    }
+
+    .subject-stats {
+        gap: var(--spacing-sm);
+    }
+
+    .subject-actions {
+        flex-direction: column;
+    }
+
+    .login-card {
+        padding: var(--spacing-lg);
+        margin: var(--spacing-md);
+    }
+
+    .login-title {
+        font-size: 1.5rem;
+    }
+
+    .form-group input,
+    .form-group select {
+        min-height: 48px;
+        font-size: 16px;
+    }
+
+    .sidebar-menu {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    table {
+        font-size: 0.9rem;
+        display: block;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        white-space: nowrap;
+    }
+
+    th, td {
+        padding: var(--spacing-sm);
+        min-width: 120px;
+    }
+
+    .btn-small {
+        padding: var(--spacing-xs);
+        font-size: 0.8rem;
+        min-height: 36px;
+        min-width: 36px;
+    }
+}
+
+@media (max-width: 320px) {
+    .header h1 {
+        font-size: 1.1rem;
+    }
+
+    .page-title {
+        font-size: 1.1rem;
+    }
+
+    .subject-name {
+        font-size: 1.1rem;
+    }
+
+    .upload-title {
+        font-size: 1.1rem;
+    }
+
+    .section-title {
+        font-size: 1.1rem;
+    }
+}
+
+@media (max-height: 500px) and (orientation: landscape) {
+    .header {
+        position: relative;
+    }
+
+    .sidebar {
+        max-height: 200px;
+        overflow-y: auto;
+    }
+}
+
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+    .user-avatar,
+    .login-logo {
+        image-rendering: -webkit-optimize-contrast;
+    }
+}
+
+@media print {
+    .header,
+    .sidebar,
+    .logout-btn,
+    .btn,
+    .assignment-actions,
+    .subject-actions {
+        display: none !important;
+    }
+
+    .main-content {
+        padding: 0;
+        margin: 0;
+    }
+
+    .subject-card,
+    .assignment-card {
+        break-inside: avoid;
+        box-shadow: none;
+        border: 1px solid #ccc;
+    }
+}
+
+
+
 
 @keyframes fadeIn {
     from {
@@ -925,12 +1202,10 @@ tr:last-child td {
     animation: fadeIn 0.5s ease-out;
 }
 
-/* Smooth Scrolling */
 html {
     scroll-behavior: smooth;
 }
 
-/* Custom Scrollbar */
 ::-webkit-scrollbar {
     width: 8px;
     height: 8px;
@@ -949,7 +1224,6 @@ html {
     background: var(--accent-blue);
 }
 
-/* Doctor Dashboard Specific */
 .high-similarity {
     background: rgba(244, 67, 54, 0.1) !important;
     color: var(--danger-red) !important;

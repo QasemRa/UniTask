@@ -1,0 +1,124 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}لوحة الطالب - نظام الجامعة{% endblock %}
+
+{% block content %}
+    <header class="header">
+        <div class="header-content">
+            <h1>🎓 نظام الجامعة</h1>
+            <div class="header-user">
+                <div class="user-info">
+                    <div class="user-avatar">{{ user.username|slice:":1"|upper }}</div>
+                    <span>مرحباً، {{ user.username }}</span>
+                </div>
+                <a href="{% url 'logout' %}" class="logout-btn">تسجيل الخروج</a>
+            </div>
+        </div>
+    </header>
+
+    <div class="dashboard-layout">
+        <aside class="sidebar">
+            <ul class="sidebar-menu">
+                <li>
+                    <a href="{% url 'student' %}" class="active">
+                        <span class="icon">📊</span>
+                        <span>لوحة التحكم</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'student_subjects' %}">
+                        <span class="icon">📚</span>
+                        <span>موادي الدراسية</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'student_upload' %}">
+                        <span class="icon">📤</span>
+                        <span>رفع واجب</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'student_submissions' %}">
+                        <span class="icon">📝</span>
+                        <span>واجباتي</span>
+                    </a>
+                </li>
+            </ul>
+        </aside>
+
+        <main class="main-content">
+            <h1 class="page-title">لوحة تحكم الطالب</h1>
+
+            <div class="subjects-grid" style="margin-bottom: 2rem;">
+                <div class="subject-card">
+                    <div class="subject-header">
+                        <div>
+                            <h3 class="subject-name">المواد المسجلة</h3>
+                        </div>
+                    </div>
+                    <div class="subject-body">
+                        <div class="stat-item" style="text-align: center;">
+                            <div class="stat-number" style="font-size: 3rem;">{{ total_subjects }}</div>
+                            <div class="stat-label">مادة دراسية</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="subject-card">
+                    <div class="subject-header" style="background: linear-gradient(135deg, #43a047 0%, #66bb6a 100%);">
+                        <div>
+                            <h3 class="subject-name">الواجبات المرفوعة</h3>
+                        </div>
+                    </div>
+                    <div class="subject-body">
+                        <div class="stat-item" style="text-align: center;">
+                            <div class="stat-number" style="font-size: 3rem;">{{ total_submissions }}</div>
+                            <div class="stat-label">واجب مكتمل</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {% if messages %}
+            <div style="margin-bottom: 2rem;">
+                {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}" style="padding: 1rem; background: {% if message.tags == 'success' %}rgba(76, 175, 80, 0.1){% elif message.tags == 'error' %}rgba(244, 67, 54, 0.1){% else %}rgba(255, 152, 0, 0.1){% endif %}; border-radius: 8px; margin-bottom: 1rem; color: {% if message.tags == 'success' %}#4caf50{% elif message.tags == 'error' %}#f44336{% else %}#ff9800{% endif %};">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <div class="subjects-section">
+                <div class="section-header">
+                    <h2 class="section-title">⚡ إجراءات سريعة</h2>
+                </div>
+                <div class="subjects-grid">
+                    <div class="subject-card">
+                        <div class="subject-body" style="text-align: center; padding: 2rem;">
+                            <div style="font-size: 3rem; margin-bottom: 1rem;">📤</div>
+                            <h3 style="margin-bottom: 1rem;">رفع واجب جديد</h3>
+                            <a href="{% url 'student_upload' %}" class="btn btn-primary">رفع الآن</a>
+                        </div>
+                    </div>
+                    <div class="subject-card">
+                        <div class="subject-body" style="text-align: center; padding: 2rem;">
+                            <div style="font-size: 3rem; margin-bottom: 1rem;">📚</div>
+                            <h3 style="margin-bottom: 1rem;">عرض المواد</h3>
+                            <a href="{% url 'student_subjects' %}" class="btn btn-outline">عرض المواد</a>
+                        </div>
+                    </div>
+                    <div class="subject-card">
+                        <div class="subject-body" style="text-align: center; padding: 2rem;">
+                            <div style="font-size: 3rem; margin-bottom: 1rem;">📝</div>
+                            <h3 style="margin-bottom: 1rem;">واجباتي</h3>
+                            <a href="{% url 'student_submissions' %}" class="btn btn-outline">عرض الواجبات</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+{% endblock %}

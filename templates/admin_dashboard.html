@@ -1,0 +1,166 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}لوحة التحكم - نظام الجامعة{% endblock %}
+
+{% block content %}
+    <header class="header">
+        <div class="header-content">
+            <h1>🎓 نظام الجامعة - لوحة التحكم</h1>
+            <div class="header-user">
+                <div class="user-info">
+                    <div class="user-avatar">{{ user.username|slice:":1"|upper }}</div>
+                    <span>مرحباً، {{ user.get_full_name|default:user.username }}</span>
+                </div>
+                <a href="{% url 'logout' %}" class="logout-btn">تسجيل الخروج</a>
+            </div>
+        </div>
+    </header>
+
+    <div class="dashboard-layout">
+        <aside class="sidebar">
+            <ul class="sidebar-menu">
+                <li>
+                    <a href="{% url 'admin_dashboard' %}" class="active">
+                        <span class="icon">📊</span>
+                        <span>لوحة التحكم</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'admin_add_doctor' %}">
+                        <span class="icon">👨‍🏫</span>
+                        <span>إضافة دكتور</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'admin_add_student' %}">
+                        <span class="icon">👨‍🎓</span>
+                        <span>إضافة طالب</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'admin_assign_subjects' %}">
+                        <span class="icon">📚</span>
+                        <span>توزيع المواد</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'admin_manage_users' %}">
+                        <span class="icon">👥</span>
+                        <span>إدارة المستخدمين</span>
+                    </a>
+                </li>
+            </ul>
+        </aside>
+
+        <main class="main-content">
+            <h1 class="page-title">📊 لوحة تحكم النظام</h1>
+
+            {% if messages %}
+            <div style="margin-bottom: 2rem;">
+                {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}"
+                    style="padding: 1rem; background: {% if message.tags == 'success' %}rgba(76, 175, 80, 0.1){% elif message.tags == 'error' %}rgba(244, 67, 54, 0.1){% else %}rgba(255, 152, 0, 0.1){% endif %}; border-radius: 8px; margin-bottom: 1rem; color: {% if message.tags == 'success' %}#4caf50{% elif message.tags == 'error' %}#f44336{% else %}#ff9800{% endif %};">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <div class="subjects-grid" style="margin-bottom: 2rem;">
+                <div class="subject-card">
+                    <div class="subject-header" style="background: linear-gradient(135deg, #1976d2 0%, #42a5f5 100%);">
+                        <div>
+                            <h3 class="subject-name">إجمالي الدكاترة</h3>
+                        </div>
+                    </div>
+                    <div class="subject-body">
+                        <div class="stat-item" style="text-align: center;">
+                            <div class="stat-number" style="font-size: 3rem;">{{ total_doctors }}</div>
+                            <div class="stat-label">دكتور</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="subject-card">
+                    <div class="subject-header" style="background: linear-gradient(135deg, #43a047 0%, #66bb6a 100%);">
+                        <div>
+                            <h3 class="subject-name">إجمالي الطلاب</h3>
+                        </div>
+                    </div>
+                    <div class="subject-body">
+                        <div class="stat-item" style="text-align: center;">
+                            <div class="stat-number" style="font-size: 3rem;">{{ total_students }}</div>
+                            <div class="stat-label">طالب</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="subject-card">
+                    <div class="subject-header" style="background: linear-gradient(135deg, #e53935 0%, #ef5350 100%);">
+                        <div>
+                            <h3 class="subject-name">إجمالي المواد</h3>
+                        </div>
+                    </div>
+                    <div class="subject-body">
+                        <div class="stat-item" style="text-align: center;">
+                            <div class="stat-number" style="font-size: 3rem;">{{ total_subjects }}</div>
+                            <div class="stat-label">مادة</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="subject-card">
+                    <div class="subject-header" style="background: linear-gradient(135deg, #f57c00 0%, #ffb74d 100%);">
+                        <div>
+                            <h3 class="subject-name">الواجبات المرفوعة</h3>
+                        </div>
+                    </div>
+                    <div class="subject-body">
+                        <div class="stat-item" style="text-align: center;">
+                            <div class="stat-number" style="font-size: 3rem;">{{ total_submissions }}</div>
+                            <div class="stat-label">واجب</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="subjects-section">
+                <div class="section-header">
+                    <h2 class="section-title">⚡ إجراءات سريعة</h2>
+                </div>
+                <div class="subjects-grid">
+                    <div class="subject-card">
+                        <div class="subject-body" style="text-align: center; padding: 2rem;">
+                            <div style="font-size: 3rem; margin-bottom: 1rem;">👨‍🏫</div>
+                            <h3 style="margin-bottom: 1rem;">إضافة دكتور جديد</h3>
+                            <a href="{% url 'admin_add_doctor' %}" class="btn btn-primary">إضافة دكتور</a>
+                        </div>
+                    </div>
+                    <div class="subject-card">
+                        <div class="subject-body" style="text-align: center; padding: 2rem;">
+                            <div style="font-size: 3rem; margin-bottom: 1rem;">👨‍🎓</div>
+                            <h3 style="margin-bottom: 1rem;">إضافة طالب جديد</h3>
+                            <a href="{% url 'admin_add_student' %}" class="btn btn-primary">إضافة طالب</a>
+                        </div>
+                    </div>
+                    <div class="subject-card">
+                        <div class="subject-body" style="text-align: center; padding: 2rem;">
+                            <div style="font-size: 3rem; margin-bottom: 1rem;">📚</div>
+                            <h3 style="margin-bottom: 1rem;">توزيع المواد</h3>
+                            <a href="{% url 'admin_assign_subjects' %}" class="btn btn-outline">توزيع المواد</a>
+                        </div>
+                    </div>
+                    <div class="subject-card">
+                        <div class="subject-body" style="text-align: center; padding: 2rem;">
+                            <div style="font-size: 3rem; margin-bottom: 1rem;">👥</div>
+                            <h3 style="margin-bottom: 1rem;">إدارة المستخدمين</h3>
+                            <a href="{% url 'admin_manage_users' %}" class="btn btn-outline">عرض المستخدمين</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+{% endblock %}

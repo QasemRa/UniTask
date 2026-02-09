@@ -1,0 +1,168 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}إضافة دكتور - نظام الجامعة{% endblock %}
+
+{% block content %}
+    <header class="header">
+        <div class="header-content">
+            <h1>🎓 نظام الجامعة - لوحة التحكم</h1>
+            <div class="header-user">
+                <div class="user-info">
+                    <div class="user-avatar">{{ user.username|slice:":1"|upper }}</div>
+                    <span>مرحباً، {{ user.get_full_name|default:user.username }}</span>
+                </div>
+                <a href="{% url 'logout' %}" class="logout-btn">تسجيل الخروج</a>
+            </div>
+        </div>
+    </header>
+
+    <div class="dashboard-layout">
+        <aside class="sidebar">
+            <ul class="sidebar-menu">
+                <li>
+                    <a href="{% url 'admin_dashboard' %}">
+                        <span class="icon">📊</span>
+                        <span>لوحة التحكم</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'admin_add_doctor' %}" class="active">
+                        <span class="icon">👨‍🏫</span>
+                        <span>إضافة دكتور</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'admin_add_student' %}">
+                        <span class="icon">👨‍🎓</span>
+                        <span>إضافة طالب</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'admin_assign_subjects' %}">
+                        <span class="icon">📚</span>
+                        <span>توزيع المواد</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'admin_manage_users' %}">
+                        <span class="icon">👥</span>
+                        <span>إدارة المستخدمين</span>
+                    </a>
+                </li>
+            </ul>
+        </aside>
+
+        <main class="main-content">
+            <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 2rem;">
+                <a href="{% url 'admin_dashboard' %}" class="btn btn-outline" style="padding: 0.5rem 1rem;">
+                    ← العودة للوحة التحكم
+                </a>
+                <h1 class="page-title" style="margin-bottom: 0;">👨‍🏫 إضافة دكتور جديد</h1>
+            </div>
+
+            {% if messages %}
+            <div style="margin-bottom: 2rem;">
+                {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}"
+                    style="padding: 1rem; background: {% if message.tags == 'success' %}rgba(76, 175, 80, 0.1){% elif message.tags == 'error' %}rgba(244, 67, 54, 0.1){% else %}rgba(255, 152, 0, 0.1){% endif %}; border-radius: 8px; margin-bottom: 1rem; color: {% if message.tags == 'success' %}#4caf50{% elif message.tags == 'error' %}#f44336{% else %}#ff9800{% endif %};">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <div class="upload-card">
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <div class="form-grid">
+                        <div class="form-field">
+                            <div class="field-label">
+                                <span class="label-icon">👤</span>
+                                الاسم الكامل
+                            </div>
+                            <div class="select-wrapper">
+                                <input type="text" name="first_name" required 
+                                       placeholder="أدخل الاسم الأول" 
+                                       style="width: 100%; padding: var(--spacing-sm); border: 2px solid var(--border-gray); border-radius: var(--radius-md);">
+                            </div>
+                        </div>
+
+                        <div class="form-field">
+                            <div class="field-label">
+                                <span class="label-icon">👤</span>
+                                اسم العائلة
+                            </div>
+                            <div class="select-wrapper">
+                                <input type="text" name="last_name" required 
+                                       placeholder="أدخل اسم العائلة" 
+                                       style="width: 100%; padding: var(--spacing-sm); border: 2px solid var(--border-gray); border-radius: var(--radius-md);">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-grid">
+                        <div class="form-field">
+                            <div class="field-label">
+                                <span class="label-icon">📧</span>
+                                البريد الإلكتروني
+                            </div>
+                            <div class="select-wrapper">
+                                <input type="email" name="email" required 
+                                       placeholder="example@university.edu" 
+                                       style="width: 100%; padding: var(--spacing-sm); border: 2px solid var(--border-gray); border-radius: var(--radius-md);">
+                            </div>
+                        </div>
+
+                        <div class="form-field">
+                            <div class="field-label">
+                                <span class="label-icon">🔐</span>
+                                كلمة المرور
+                            </div>
+                            <div class="select-wrapper">
+                                <input type="password" name="password" required 
+                                       placeholder="أدخل كلمة المرور" 
+                                       style="width: 100%; padding: var(--spacing-sm); border: 2px solid var(--border-gray); border-radius: var(--radius-md);">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-grid">
+                        <div class="form-field">
+                            <div class="field-label">
+                                <span class="label-icon">📱</span>
+                                رقم الهاتف (اختياري)
+                            </div>
+                            <div class="select-wrapper">
+                                <input type="tel" name="phone" 
+                                       placeholder="07xxxxxxxxx" 
+                                       style="width: 100%; padding: var(--spacing-sm); border: 2px solid var(--border-gray); border-radius: var(--radius-md);">
+                            </div>
+                        </div>
+
+                        <div class="form-field">
+                            <div class="field-label">
+                                <span class="label-icon">🏢</span>
+                                القسم (اختياري)
+                            </div>
+                            <div class="select-wrapper">
+                                <input type="text" name="department" 
+                                       placeholder="قسم علوم الحاسوب" 
+                                       style="width: 100%; padding: var(--spacing-sm); border: 2px solid var(--border-gray); border-radius: var(--radius-md);">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-actions" style="text-align: center; margin-top: 2rem;">
+                        <button type="submit" class="submit-button">
+                            <span class="button-icon">➕</span>
+                            إضافة الدكتور
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+        </main>
+    </div>
+{% endblock %}

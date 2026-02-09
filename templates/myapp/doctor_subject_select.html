@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}اختر المادة - نظام الجامعة{% endblock %}
+
+{% block content %}
+    <header class="header">
+        <div class="header-content">
+            <h1>🎓 نظام الجامعة - لوحة الأستاذ</h1>
+            <div class="header-user">
+                <div class="user-info">
+                    <div class="user-avatar">{{ user.username|slice:":1"|upper }}</div>
+                    <span>مرحباً، د. {{ user.get_full_name|default:user.username }}</span>
+                </div>
+                <a href="{% url 'logout' %}" class="logout-btn">تسجيل الخروج</a>
+            </div>
+        </div>
+    </header>
+
+    <div class="dashboard-layout">
+        <aside class="sidebar">
+            <ul class="sidebar-menu">
+                <li>
+                    <a href="{% url 'doctor_dashboard' %}">
+                        <span class="icon">📊</span>
+                        <span>لوحة التحكم</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'doctor_subject_select' %}" class="active">
+                        <span class="icon">📚</span>
+                        <span>اختيار المادة</span>
+                    </a>
+                </li>
+            </ul>
+        </aside>
+
+        <main class="main-content">
+            <h1 class="page-title">📚 اختر المادة الدراسية</h1>
+
+            {% if messages %}
+            <div style="margin-bottom: 2rem;">
+                {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}"
+                    style="padding: 1rem; background: {% if message.tags == 'success' %}rgba(76, 175, 80, 0.1){% elif message.tags == 'error' %}rgba(244, 67, 54, 0.1){% else %}rgba(255, 152, 0, 0.1){% endif %}; border-radius: 8px; margin-bottom: 1rem; color: {% if message.tags == 'success' %}#4caf50{% elif message.tags == 'error' %}#f44336{% else %}#ff9800{% endif %};">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <div class="upload-card" style="margin-bottom: 2rem;">
+                <p style="color: #757575; margin-bottom: 1rem;">
+                    لديك مواد دراسية متعددة. يرجى اختيار المادة التي تريد إدارتها حالياً.
+                </p>
+            </div>
+
+            {% if subjects %}
+            <div class="subjects-grid">
+                {% for subject in subjects %}
+                <div class="subject-card">
+                    <div class="subject-header" style="background: linear-gradient(135deg, 
+                        {% cycle '#1976d2' '#43a047' '#e53935' '#f57c00' '#7b1fa2' '#0097a7' %} 0%, 
+                        {% cycle '#42a5f5' '#66bb6a' '#ef5350' '#ffb74d' '#ba68c8' '#4dd0e1' %} 100%);">
+                        <div>
+                            <h3 class="subject-name">{{ subject.name }}</h3>
+                            <p class="subject-teacher">د. {{ user.get_full_name|default:user.username }}</p>
+                        </div>
+                    </div>
+                    <div class="subject-body">
+                        <div class="subject-stats">
+                            <div class="stat-item">
+                                <div class="stat-number">{{ subject.enrollments.count }}</div>
+                                <div class="stat-label">طالب مسجل</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-number">{{ subject.submissions.count }}</div>
+                                <div class="stat-label">واجب مرفوع</div>
+                            </div>
+                        </div>
+
+                        {% if subject.description %}
+                        <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #e0e0e0;">
+                            <p style="font-size: 0.9rem; color: #757575;">{{
+                                subject.description|truncatewords:15 }}</p>
+                        </div>
+                        {% endif %}
+
+                        <div class="subject-actions" style="margin-top: 1rem;">
+                            <a href="{% url 'doctor_subject_detail' subject.id %}" class="btn btn-primary">إدارة المادة</a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="upload-card">
+                <div style="text-align: center; padding: 2rem; color: #757575;">
+                    <div style="font-size: 3rem; margin-bottom: 1rem;">📚</div>
+                    <h3 style="color: #212121; margin-bottom: 0.5rem;">لا توجد مواد مسندة</h3>
+                    <p>لم يتم إسناد أي مادة دراسية لك بعد. يرجى الاتصال بالإدارة.</p>
+                </div>
+            </div>
+            {% endif %}
+
+        </main>
+    </div>
+{% endblock %}

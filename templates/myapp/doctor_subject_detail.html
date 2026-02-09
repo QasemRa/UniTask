@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}لوحة الأستاذ - نظام الجامعة{% endblock %}
+{% block title %}{{ subject.name }} - نظام الجامعة{% endblock %}
 
 {% block content %}
     <header class="header">
@@ -21,25 +21,31 @@
         <aside class="sidebar">
             <ul class="sidebar-menu">
                 <li>
-                    <a href="{% url 'doctor_dashboard' %}" class="active">
+                    <a href="{% url 'doctor_subject_select' %}">
+                        <span class="icon">📚</span>
+                        <span>اختيار المادة</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'doctor_subject_detail' subject.id %}" class="active">
                         <span class="icon">📊</span>
                         <span>لوحة التحكم</span>
                     </a>
                 </li>
                 <li>
-                    <a href="{% url 'doctor_subjects' %}">
-                        <span class="icon">📚</span>
-                        <span>موادي</span>
+                    <a href="{% url 'doctor_subject_students' subject.id %}">
+                        <span class="icon">👥</span>
+                        <span>الطلاب المسجلون</span>
                     </a>
                 </li>
                 <li>
-                    <a href="{% url 'doctor_submissions' %}">
+                    <a href="{% url 'doctor_subject_submissions' subject.id %}">
                         <span class="icon">📝</span>
                         <span>الواجبات المرفوعة</span>
                     </a>
                 </li>
                 <li>
-                    <a href="{% url 'doctor_plagiarism' %}">
+                    <a href="{% url 'doctor_subject_plagiarism' subject.id %}">
                         <span class="icon">🔍</span>
                         <span>كشف الانتحال</span>
                     </a>
@@ -48,7 +54,12 @@
         </aside>
 
         <main class="main-content">
-            <h1 class="page-title">لوحة تحكم الأستاذ</h1>
+            <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 2rem;">
+                <a href="{% url 'doctor_subject_select' %}" class="btn btn-outline" style="padding: 0.5rem 1rem;">
+                    ← العودة للمواد
+                </a>
+                <h1 class="page-title" style="margin-bottom: 0;">📖 {{ subject.name }}</h1>
+            </div>
 
             {% if messages %}
             <div style="margin-bottom: 2rem;">
@@ -65,12 +76,12 @@
                 <div class="subject-card">
                     <div class="subject-header" style="background: linear-gradient(135deg, #43a047 0%, #66bb6a 100%);">
                         <div>
-                            <h3 class="subject-name">إجمالي الواجبات</h3>
+                            <h3 class="subject-name">الواجبات المرفوعة</h3>
                         </div>
                     </div>
                     <div class="subject-body">
                         <div class="stat-item" style="text-align: center;">
-                            <div class="stat-number" style="font-size: 3rem;">{{ total_submissions }}</div>
+                            <div class="stat-number" style="font-size: 3rem;">{{ subject.submissions.count }}</div>
                             <div class="stat-label">واجب مرفوع</div>
                         </div>
                     </div>
@@ -79,33 +90,24 @@
                 <div class="subject-card">
                     <div class="subject-header" style="background: linear-gradient(135deg, #1976d2 0%, #42a5f5 100%);">
                         <div>
-                            <h3 class="subject-name">الطلاب النشطون</h3>
+                            <h3 class="subject-name">الطلاب المسجلون</h3>
                         </div>
                     </div>
                     <div class="subject-body">
                         <div class="stat-item" style="text-align: center;">
-                            <div class="stat-number" style="font-size: 3rem;">{{ unique_students }}</div>
+                            <div class="stat-number" style="font-size: 3rem;">{{ subject.enrollments.count }}</div>
                             <div class="stat-label">طالب</div>
                         </div>
                     </div>
                 </div>
-
-                <div class="subject-card">
-                    <div class="subject-header" style="background: linear-gradient(135deg, #e53935 0%, #ef5350 100%);">
-                        <div>
-                            <h3 class="subject-name">حالات الانتحال</h3>
-                        </div>
-                    </div>
-                    <div class="subject-body">
-                        <div class="stat-item" style="text-align: center;">
-                            <div class="stat-number" style="font-size: 3rem; color: #e53935;">{{ high_similarity_count}}
-                                
-                            </div>
-                            <div class="stat-label">حالة مشتبهة</div>
-                        </div>
-                    </div>
-                </div>
             </div>
+
+            {% if subject.description %}
+            <div class="upload-card" style="margin-bottom: 2rem;">
+                <h3 style="color: var(--text-dark); margin-bottom: 1rem;">📝 وصف المادة</h3>
+                <p style="color: var(--text-gray); line-height: 1.6;">{{ subject.description }}</p>
+            </div>
+            {% endif %}
 
             <div class="subjects-section">
                 <div class="section-header">
@@ -114,23 +116,23 @@
                 <div class="subjects-grid">
                     <div class="subject-card">
                         <div class="subject-body" style="text-align: center; padding: 2rem;">
-                            <div style="font-size: 3rem; margin-bottom: 1rem;">📚</div>
-                            <h3 style="margin-bottom: 1rem;">عرض المواد</h3>
-                            <a href="{% url 'doctor_subjects' %}" class="btn btn-primary">عرض المواد</a>
+                            <div style="font-size: 3rem; margin-bottom: 1rem;">👥</div>
+                            <h3 style="margin-bottom: 1rem;">عرض الطلاب</h3>
+                            <a href="{% url 'doctor_subject_students' subject.id %}" class="btn btn-primary">عرض الطلاب</a>
                         </div>
                     </div>
                     <div class="subject-card">
                         <div class="subject-body" style="text-align: center; padding: 2rem;">
                             <div style="font-size: 3rem; margin-bottom: 1rem;">📝</div>
                             <h3 style="margin-bottom: 1rem;">الواجبات المرفوعة</h3>
-                            <a href="{% url 'doctor_submissions' %}" class="btn btn-outline">عرض الواجبات</a>
+                            <a href="{% url 'doctor_subject_submissions' subject.id %}" class="btn btn-outline">عرض الواجبات</a>
                         </div>
                     </div>
                     <div class="subject-card">
                         <div class="subject-body" style="text-align: center; padding: 2rem;">
                             <div style="font-size: 3rem; margin-bottom: 1rem;">🔍</div>
                             <h3 style="margin-bottom: 1rem;">كشف الانتحال</h3>
-                            <a href="{% url 'doctor_plagiarism' %}" class="btn btn-outline">فحص الانتحال</a>
+                            <a href="{% url 'doctor_subject_plagiarism' subject.id %}" class="btn btn-outline">فحص الانتحال</a>
                         </div>
                     </div>
                 </div>

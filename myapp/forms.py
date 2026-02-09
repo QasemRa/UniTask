@@ -1,5 +1,9 @@
 from django import forms
+from django.forms.widgets import ClearableFileInput
 from .models import Submission, Enrollment
+
+class MultipleFileInput(ClearableFileInput):
+    allow_multiple_selected = True
 
 class UploadForm(forms.ModelForm):
     class Meta:
@@ -22,7 +26,6 @@ class UploadForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         
         if user:
-            # Get only subjects the student is enrolled in
             enrolled_subjects = Enrollment.objects.filter(
                 student=user
             ).select_related('subject').values_list('subject', 'subject__name')
@@ -31,12 +34,10 @@ class UploadForm(forms.ModelForm):
                 id__in=[subj[0] for subj in enrolled_subjects]
             )
             
-            # Update the widget choices
             self.fields['subject'].widget.choices = [('', '--- اختر المادة ---')] + [
                 (subj[0], subj[1]) for subj in enrolled_subjects
             ]
         else:
-            # If no user, show empty queryset
             self.fields['subject'].queryset = Submission._meta.get_field('subject').related_model.objects.none()
 
     def clean_file(self):
@@ -44,7 +45,35 @@ class UploadForm(forms.ModelForm):
         if file:
             if not file.name.lower().endswith('.pdf'):
                 raise forms.ValidationError('يُسمح فقط بملفات PDF.')
-            # Check file size (max 10MB)
             if file.size > 10 * 1024 * 1024:
                 raise forms.ValidationError('حجم الملف يجب أن يكون أقل من 10 ميجابايت.')
         return file
+
+
+class PDFCompareForm(forms.Form):
+    pdf_files = forms.FileField(
+        widget=MultipleFileInput(attrs={
+            'class': 'form-control',
+            'accept': '.pdf',
+            'multiple': True,
+            'required': True
+        }),
+        label="اختر ملفات PDF للمقارنة"
+    )
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['pdf_files'].required = True
+    
+    def clean_pdf_files(self):
+        files = self.files.getlist('pdf_files')
+        if len(files) < 2:
+            raise forms.ValidationError('يجب اختيار ملفين PDF على الأقل للمقارنة.')
+        
+        for file in files:
+            if not file.name.lower().endswith('.pdf'):
+                raise forms.ValidationError(f'الملف {file.name} ليس ملف PDF صالح.')
+            if file.size > 10 * 1024 * 1024:
+                raise forms.ValidationError(f'حجم الملف {file.name} يجب أن يكون أقل من 10 ميجابايت.')
+        
+        return files

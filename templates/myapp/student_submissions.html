@@ -1,0 +1,115 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}واجباتي - نظام الجامعة{% endblock %}
+
+{% block content %}
+    <header class="header">
+        <div class="header-content">
+            <h1>🎓 نظام الجامعة</h1>
+            <div class="header-user">
+                <div class="user-info">
+                    <div class="user-avatar">{{ user.username|slice:":1"|upper }}</div>
+                    <span>مرحباً، {{ user.username }}</span>
+                </div>
+                <a href="{% url 'logout' %}" class="logout-btn">تسجيل الخروج</a>
+            </div>
+        </div>
+    </header>
+
+    <div class="dashboard-layout">
+        <aside class="sidebar">
+            <ul class="sidebar-menu">
+                <li>
+                    <a href="{% url 'student' %}">
+                        <span class="icon">📊</span>
+                        <span>لوحة التحكم</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'student_subjects' %}">
+                        <span class="icon">📚</span>
+                        <span>موادي الدراسية</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'student_upload' %}">
+                        <span class="icon">📤</span>
+                        <span>رفع واجب</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'student_submissions' %}" class="active">
+                        <span class="icon">📝</span>
+                        <span>واجباتي</span>
+                    </a>
+                </li>
+            </ul>
+        </aside>
+
+        <main class="main-content">
+            <h1 class="page-title">واجباتي المرفوعة</h1>
+
+            {% if messages %}
+            <div style="margin-bottom: 2rem;">
+                {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}" style="padding: 1rem; background: {% if message.tags == 'success' %}rgba(76, 175, 80, 0.1){% elif message.tags == 'error' %}rgba(244, 67, 54, 0.1){% else %}rgba(255, 152, 0, 0.1){% endif %}; border-radius: 8px; margin-bottom: 1rem; color: {% if message.tags == 'success' %}#4caf50{% elif message.tags == 'error' %}#f44336{% else %}#ff9800{% endif %};">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <section class="assignments-section">
+                <div class="section-header">
+                    <h2 class="section-title">📝 جميع واجباتي المرفوعة ({{ total_submissions }})</h2>
+                </div>
+                
+                {% if submissions %}
+                <div class="assignments-list">
+                    {% for submission in submissions %}
+                    <div class="assignment-card submitted">
+                        <div class="assignment-header">
+                            <div>
+                                <h3 class="assignment-title">{{ submission.subject.name }}</h3>
+                                <p style="font-size: 0.9rem; color: #757575; margin-top: 0.3rem;">
+                                    الأستاذ: د. {% if submission.subject.doctor %}{{ submission.subject.doctor.get_full_name|default:submission.subject.doctor.username }}{% else %}غير محدد{% endif %}
+                                </p>
+                            </div>
+                            <span class="assignment-status status-submitted">✓ مكتمل</span>
+                        </div>
+                        <div class="assignment-meta">
+                            <span>📄 {{ submission.file.name|slice:"20:" }}</span>
+                            <span>📅 {{ submission.upload_date|date:"Y/m/d" }}</span>
+                            <span>🕐 {{ submission.upload_date|time:"H:i" }}</span>
+                        </div>
+                        <div class="assignment-actions">
+                            <a href="{{ submission.file.url }}" target="_blank" class="btn btn-primary">عرض الملف</a>
+                            <a href="{{ submission.file.url }}" download class="btn btn-outline">تحميل</a>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="assignment-card pending">
+                    <div class="assignment-header">
+                        <div>
+                            <h3 class="assignment-title">لا توجد واجبات مرفوعة بعد</h3>
+                        </div>
+                        <span class="assignment-status status-pending">⏳ قيد الانتظار</span>
+                    </div>
+                    <div class="assignment-meta">
+                        <span>ابدأ برفع واجباتك الآن</span>
+                    </div>
+                    {% if enrollments %}
+                    <div class="assignment-actions">
+                        <a href="{% url 'student_upload' %}" class="btn btn-primary">رفع واجب</a>
+                    </div>
+                    {% endif %}
+                </div>
+                {% endif %}
+            </section>
+
+        </main>
+    </div>
+{% endblock %}

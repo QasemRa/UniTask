@@ -1,0 +1,158 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}كشف التطابق - نظام الجامعة{% endblock %}
+
+{% block content %}
+    <header class="header">
+        <div class="header-content">
+            <h1>🎓 نظام الجامعة - لوحة الأستاذ</h1>
+            <div class="header-user">
+                <div class="user-info">
+                    <div class="user-avatar">{{ user.username|slice:":1"|upper }}</div>
+                    <span>مرحباً، د. {{ user.get_full_name|default:user.username }}</span>
+                </div>
+                <a href="{% url 'logout' %}" class="logout-btn">تسجيل الخروج</a>
+            </div>
+        </div>
+    </header>
+
+    <div class="dashboard-layout">
+        <aside class="sidebar">
+            <ul class="sidebar-menu">
+                <li>
+                    <a href="{% url 'doctor_dashboard' %}">
+                        <span class="icon">📊</span>
+                        <span>لوحة التحكم</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'doctor_subjects' %}">
+                        <span class="icon">📚</span>
+                        <span>موادي</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'doctor_submissions' %}">
+                        <span class="icon">📝</span>
+                        <span>الواجبات المرفوعة</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'doctor_plagiarism' %}" class="active">
+                        <span class="icon">🔍</span>
+                        <span>كشف التطابق</span>
+                    </a>
+                </li>
+            </ul>
+        </aside>
+
+        <main class="main-content">
+            <h1 class="page-title">🔍 نتائج كشف التطابق</h1>
+
+            {% if messages %}
+            <div style="margin-bottom: 2rem;">
+                {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}"
+                    style="padding: 1rem; background: {% if message.tags == 'success' %}rgba(76, 175, 80, 0.1){% elif message.tags == 'error' %}rgba(244, 67, 54, 0.1){% else %}rgba(255, 152, 0, 0.1){% endif %}; border-radius: 8px; margin-bottom: 1rem; color: {% if message.tags == 'success' %}#4caf50{% elif message.tags == 'error' %}#f44336{% else %}#ff9800{% endif %};">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <div class="upload-card" style="margin-bottom: 2rem;">
+                <p style="color: #757575; margin-bottom: 1rem;">
+                    يتم فحص التشابه بين الواجبات المرفوعة تلقائياً. النسب العالية (أكثر من 70%) تظهر باللون الأحمر
+                    وتحتاج إلى مراجعة يدوية.
+                </p>
+            </div>
+
+            {% if similarities %}
+            <div class="table-container" style="margin-bottom: 2rem;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>الطالب الأول</th>
+                            <th>الطالب الثاني</th>
+                            <th>المادة</th>
+                            <th>نسبة التشابه (%)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for sim in similarities %}
+                        <tr {% if sim.similarity > 70 %}class="high-similarity"{% endif %}>
+                            <td>{{ sim.student_a }}</td>
+                            <td>{{ sim.student_b }}</td>
+                            <td>{{ sim.subject }}</td>
+                            <td>
+                                <strong>{{ sim.similarity }}%</strong>
+                                {% if sim.similarity > 70 %}
+                                <span style="margin-right: 10px;">⚠️ مشتبه</span>
+                                {% elif sim.similarity > 50 %}
+                                <span style="margin-right: 10px; color: #ff9800;">⚡ متوسط</span>
+                                {% else %}
+                                <span style="margin-right: 10px; color: #4caf50;">✓ طبيعي</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="section-header">
+                <h2 class="section-title">📊 عرض تفصيلي للتشابهات</h2>
+            </div>
+
+            <div class="assignments-list">
+                {% for sim in similarities %}
+                <div class="assignment-card {% if sim.similarity > 70 %}pending{% else %}submitted{% endif %}">
+                    <div class="assignment-header">
+                        <div>
+                            <h3 class="assignment-title">مقارنة بين طالبين - {{ sim.subject }}</h3>
+                        </div>
+                        <span
+                            class="assignment-status {% if sim.similarity > 70 %}status-pending{% else %}status-submitted{% endif %}">
+                            {% if sim.similarity > 70 %}⚠️ مشتبه{% else %}✓ طبيعي{% endif %}
+                        </span>
+                    </div>
+                    <div class="assignment-meta">
+                        <span>👤 {{ sim.student_a }}</span>
+                        <span>👤 {{ sim.student_b }}</span>
+                        <span>📊 نسبة التشابه: {{ sim.similarity }}%</span>
+                    </div>
+                    {% if sim.similarity > 70 %}
+                    <div
+                        style="padding: 1rem; background: rgba(244, 67, 54, 0.1); border-radius: 8px; margin-top: 1rem;">
+                        <strong style="color: #e53935;">⚠️ تحذير:</strong>
+                        <p style="margin-top: 0.5rem; color: #757575;">
+                            نسبة التشابه عالية جداً ({{ sim.similarity }}%). يُنصح بمراجعة الواجبات يدوياً للتأكد من
+                            عدم وجود انتحال.
+                        </p>
+                    </div>
+                    {% elif sim.similarity > 50 %}
+                    <div
+                        style="padding: 1rem; background: rgba(255, 152, 0, 0.1); border-radius: 8px; margin-top: 1rem;">
+                        <strong style="color: #ff9800;">⚡ ملاحظة:</strong>
+                        <p style="margin-top: 0.5rem; color: #757575;">
+                            نسبة التشابه متوسطة ({{ sim.similarity }}%). قد تحتاج إلى مراجعة سريعة.
+                        </p>
+                    </div>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="upload-card">
+                <div style="text-align: center; padding: 2rem; color: #757575;">
+                    <div style="font-size: 3rem; margin-bottom: 1rem;">🔍</div>
+                    <h3 style="color: #212121; margin-bottom: 0.5rem;">لا توجد نتائج للمقارنة</h3>
+                    <p>يتطلب وجود واجبين على الأقل لإجراء المقارنة وكشف التطابق.</p>
+                </div>
+            </div>
+            {% endif %}
+
+        </main>
+    </div>
+{% endblock %}

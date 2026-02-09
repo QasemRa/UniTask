@@ -1,13 +1,9 @@
+{% extends 'base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>لوحة الطالب - نظام الجامعة</title>
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
-</head>
-<body>
+
+{% block title %}لوحة الطالب - نظام الجامعة{% endblock %}
+
+{% block content %}
     <!-- Header -->
     <header class="header">
         <div class="header-content">
@@ -252,7 +248,9 @@
 
         </main>
     </div>
+{% endblock %}
 
+{% block extra_scripts %}
     <script>
         // Smooth scroll for navigation links
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
@@ -277,5 +275,4 @@
             });
         });
     </script>
-</body>
-</html>
+{% endblock %}

@@ -5,9 +5,18 @@ class Profile(models.Model):
     ROLE_CHOICES = [
         ('student', 'Student'),
         ('doctor', 'Doctor'),
+        ('admin', 'Admin'),
     ]
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     role = models.CharField(max_length=10, choices=ROLE_CHOICES)
+    phone = models.CharField(max_length=20, blank=True, null=True)
+    department = models.CharField(max_length=100, blank=True, null=True)
+    student_id = models.CharField(max_length=20, blank=True, null=True)
+    study_level = models.CharField(max_length=20, blank=True, null=True, 
+                                choices=[('first_year', 'السنة الأولى'), ('second_year', 'السنة الثانية'), 
+                                        ('third_year', 'السنة الثالثة'), ('fourth_year', 'السنة الرابعة')])
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f"{self.user.username} - {self.role}"
@@ -58,7 +67,7 @@ class Enrollment(models.Model):
     class Meta:
         verbose_name = 'Enrollment'
         verbose_name_plural = 'Enrollments'
-        unique_together = ('student', 'subject')  # Prevent duplicate enrollments
+        unique_together = ('student', 'subject')  
         ordering = ['-enrolled_date']
 
     def __str__(self):
@@ -78,7 +87,7 @@ class Submission(models.Model):
         related_name='submissions'
     )
     file = models.FileField(upload_to='submissions/%Y/%m/%d/')
-    text = models.TextField(blank=True)  # Extracted text from PDF
+    text = models.TextField(blank=True)  
     upload_date = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -98,28 +107,17 @@ class Submission(models.Model):
         return self.subject.name
 
 
-# Signals for automatic enrollment
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
 @receiver(post_save, sender=Profile)
 def enroll_student_in_all_subjects(sender, instance, created, **kwargs):
-    """Automatically enroll new students in all existing subjects"""
-    if created and instance.role == 'student':
-        subjects = Subject.objects.all()
-        for subject in subjects:
-            Enrollment.objects.get_or_create(
-                student=instance.user,
-                subject=subject
-            )
+    """Automatically enroll new students in all existing subjects - DISABLED"""
+    # This signal is disabled to allow manual enrollment control
+    pass
 
 @receiver(post_save, sender=Subject)
 def enroll_all_students_in_new_subject(sender, instance, created, **kwargs):
-    """Automatically enroll all existing students in new subjects"""
-    if created:
-        students = User.objects.filter(profile__role='student')
-        for student in students:
-            Enrollment.objects.get_or_create(
-                student=student,
-                subject=instance
-            )
+    """Automatically enroll all existing students in new subjects - DISABLED"""
+    # This signal is disabled to allow manual enrollment control
+    pass

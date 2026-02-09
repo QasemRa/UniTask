@@ -83,11 +83,9 @@ class SubmissionAdmin(admin.ModelAdmin):
     get_doctor.short_description = 'Assigned Doctor'
     
     def has_add_permission(self, request):
-        # Submissions should be created through the student interface
         return False
 
 
-# Custom User Admin with Profile Inline
 class ProfileInline(admin.StackedInline):
     model = Profile
     can_delete = False
@@ -96,6 +94,5 @@ class ProfileInline(admin.StackedInline):
 class UserAdmin(BaseUserAdmin):
     inlines = (ProfileInline,)
 
-# Unregister the default User admin and register the custom one
 admin.site.unregister(User)
 admin.site.register(User, UserAdmin)

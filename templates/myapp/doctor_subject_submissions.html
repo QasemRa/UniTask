@@ -1,0 +1,106 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}واجبات {{ subject.name }} - نظام الجامعة{% endblock %}
+
+{% block content %}
+    <header class="header">
+        <div class="header-content">
+            <h1>🎓 نظام الجامعة - لوحة الأستاذ</h1>
+            <div class="header-user">
+                <div class="user-info">
+                    <div class="user-avatar">{{ user.username|slice:":1"|upper }}</div>
+                    <span>مرحباً، د. {{ user.get_full_name|default:user.username }}</span>
+                </div>
+                <a href="{% url 'logout' %}" class="logout-btn">تسجيل الخروج</a>
+            </div>
+        </div>
+    </header>
+
+    <div class="dashboard-layout">
+        <aside class="sidebar">
+            <ul class="sidebar-menu">
+                <li>
+                    <a href="{% url 'doctor_subject_select' %}">
+                        <span class="icon">📚</span>
+                        <span>اختيار المادة</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'doctor_subject_detail' subject.id %}">
+                        <span class="icon">📊</span>
+                        <span>لوحة التحكم</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'doctor_subject_submissions' subject.id %}" class="active">
+                        <span class="icon">📝</span>
+                        <span>الواجبات المرفوعة</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'doctor_subject_plagiarism' subject.id %}">
+                        <span class="icon">🔍</span>
+                        <span>كشف الانتحال</span>
+                    </a>
+                </li>
+            </ul>
+        </aside>
+
+        <main class="main-content">
+            <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 2rem;">
+                <a href="{% url 'doctor_subject_detail' subject.id %}" class="btn btn-outline" style="padding: 0.5rem 1rem;">
+                    ← العودة للمادة
+                </a>
+                <h1 class="page-title" style="margin-bottom: 0;">📝 واجبات {{ subject.name }}</h1>
+            </div>
+
+            {% if messages %}
+            <div style="margin-bottom: 2rem;">
+                {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}"
+                    style="padding: 1rem; background: {% if message.tags == 'success' %}rgba(76, 175, 80, 0.1){% elif message.tags == 'error' %}rgba(244, 67, 54, 0.1){% else %}rgba(255, 152, 0, 0.1){% endif %}; border-radius: 8px; margin-bottom: 1rem; color: {% if message.tags == 'success' %}#4caf50{% elif message.tags == 'error' %}#f44336{% else %}#ff9800{% endif %};">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            {% if submissions %}
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>اسم الطالب</th>
+                            <th>اسم الملف</th>
+                            <th>تاريخ الرفع</th>
+                            <th>الإجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for submission in submissions %}
+                        <tr>
+                            <td>{{ submission.student.get_full_name|default:submission.student.username }}</td>
+                            <td>{{ submission.file.name|slice:"20:" }}</td>
+                            <td>{{ submission.upload_date|date:"Y/m/d H:i" }}</td>
+                            <td>
+                                <a href="{{ submission.file.url }}" target="_blank" class="btn-small">عرض الملف</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="upload-card">
+                <div style="text-align: center; padding: 2rem; color: #757575;">
+                    <div style="font-size: 3rem; margin-bottom: 1rem;">📝</div>
+                    <h3 style="color: #212121; margin-bottom: 0.5rem;">لا توجد واجبات مرفوعة</h3>
+                    <p>لم يقم أي طالب برفع واجبات لهذه المادة حتى الآن.</p>
+                </div>
+            </div>
+            {% endif %}
+
+        </main>
+    </div>
+{% endblock %}

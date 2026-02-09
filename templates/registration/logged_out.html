@@ -1,13 +1,9 @@
+{% extends 'base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>تم تسجيل الخروج - نظام الجامعة</title>
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
-</head>
-<body>
+
+{% block title %}تم تسجيل الخروج - نظام الجامعة{% endblock %}
+
+{% block content %}
     <div class="login-container">
         <div class="login-card">
             <div class="login-header">
@@ -15,11 +11,10 @@
                 <h2>تم تسجيل الخروج بنجاح</h2>
                 <p class="login-subtitle">لقد تم تسجيل خروجك من النظام بنجاح.</p>
             </div>
-            
+
             <div style="text-align: center; margin-top: 2rem;">
                 <a href="{% url 'login' %}" class="btn btn-primary">تسجيل الدخول مرة أخرى</a>
             </div>
         </div>
     </div>
-</body>
-</html>
+{% endblock %}

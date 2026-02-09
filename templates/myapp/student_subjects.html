@@ -1,0 +1,127 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}موادي الدراسية - نظام الجامعة{% endblock %}
+
+{% block content %}
+    <header class="header">
+        <div class="header-content">
+            <h1>🎓 نظام الجامعة</h1>
+            <div class="header-user">
+                <div class="user-info">
+                    <div class="user-avatar">{{ user.username|slice:":1"|upper }}</div>
+                    <span>مرحباً، {{ user.username }}</span>
+                </div>
+                <a href="{% url 'logout' %}" class="logout-btn">تسجيل الخروج</a>
+            </div>
+        </div>
+    </header>
+
+    <div class="dashboard-layout">
+        <aside class="sidebar">
+            <ul class="sidebar-menu">
+                <li>
+                    <a href="{% url 'student' %}">
+                        <span class="icon">📊</span>
+                        <span>لوحة التحكم</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'student_subjects' %}" class="active">
+                        <span class="icon">📚</span>
+                        <span>موادي الدراسية</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'student_upload' %}">
+                        <span class="icon">📤</span>
+                        <span>رفع واجب</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'student_submissions' %}">
+                        <span class="icon">📝</span>
+                        <span>واجباتي</span>
+                    </a>
+                </li>
+            </ul>
+        </aside>
+
+        <main class="main-content">
+            <h1 class="page-title">موادي الدراسية</h1>
+
+            {% if messages %}
+            <div style="margin-bottom: 2rem;">
+                {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}" style="padding: 1rem; background: {% if message.tags == 'success' %}rgba(76, 175, 80, 0.1){% elif message.tags == 'error' %}rgba(244, 67, 54, 0.1){% else %}rgba(255, 152, 0, 0.1){% endif %}; border-radius: 8px; margin-bottom: 1rem; color: {% if message.tags == 'success' %}#4caf50{% elif message.tags == 'error' %}#f44336{% else %}#ff9800{% endif %};">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <section class="subjects-section">
+                <div class="section-header">
+                    <h2 class="section-title">📚 المواد المسجلة</h2>
+                </div>
+                
+                {% if subjects_data %}
+                <div class="subjects-grid">
+                    {% for data in subjects_data %}
+                    <div class="subject-card">
+                        <div class="subject-header" style="background: linear-gradient(135deg, 
+                            {% cycle '#1976d2' '#43a047' '#e53935' '#f57c00' '#7b1fa2' '#0097a7' %} 0%, 
+                            {% cycle '#42a5f5' '#66bb6a' '#ef5350' '#ffb74d' '#ba68c8' '#4dd0e1' %} 100%);">
+                            <div>
+                                <h3 class="subject-name">{{ data.subject.name }}</h3>
+                                <p class="subject-teacher">
+                                    الأستاذ: د. {% if data.doctor %}{{ data.doctor.get_full_name|default:data.doctor.username }}{% else %}غير محدد{% endif %}
+                                </p>
+                            </div>
+                        </div>
+                        <div class="subject-body">
+                            <div class="subject-stats">
+                                <div class="stat-item">
+                                    <div class="stat-number">{{ data.total_submissions }}</div>
+                                    <div class="stat-label">الواجبات المرفوعة</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-number">{{ data.total_submissions }}</div>
+                                    <div class="stat-label">المكتملة</div>
+                                </div>
+                            </div>
+                            
+                            {% if data.submissions %}
+                            <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #e0e0e0;">
+                                <h4 style="font-size: 0.9rem; color: #757575; margin-bottom: 0.5rem;">آخر الواجبات:</h4>
+                                {% for sub in data.submissions|slice:":2" %}
+                                <div style="font-size: 0.85rem; color: #212121; margin-bottom: 0.3rem;">
+                                    <span>📄 {{ sub.file.name|slice:"20:" }}</span>
+                                    <span style="color: #757575; margin-right: 0.5rem;">{{ sub.upload_date|date:"Y/m/d" }}</span>
+                                </div>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                            
+                            <div class="subject-actions" style="margin-top: 1rem;">
+                                <a href="{% url 'student_upload' %}" class="btn btn-primary">رفع واجب جديد</a>
+                                <a href="{% url 'student_submissions' %}" class="btn btn-outline">عرض الواجبات</a>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="upload-card">
+                    <div style="text-align: center; padding: 2rem; color: #757575;">
+                        <div style="font-size: 3rem; margin-bottom: 1rem;">📚</div>
+                        <h3 style="color: #212121; margin-bottom: 0.5rem;">لا توجد مواد مسجلة</h3>
+                        <p>لم يتم تسجيلك في أي مادة دراسية بعد. يرجى الاتصال بالإدارة لتسجيلك في المواد.</p>
+                    </div>
+                </div>
+                {% endif %}
+            </section>
+
+        </main>
+    </div>
+{% endblock %}

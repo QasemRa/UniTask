@@ -1,0 +1,209 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}تسجيل الطلاب - نظام الجامعة{% endblock %}
+
+{% block content %}
+    <header class="header">
+        <div class="header-content">
+            <h1>🎓 نظام الجامعة - لوحة التحكم</h1>
+            <div class="header-user">
+                <div class="user-info">
+                    <div class="user-avatar">{{ user.username|slice:":1"|upper }}</div>
+                    <span>مرحباً، {{ user.get_full_name|default:user.username }}</span>
+                </div>
+                <a href="{% url 'logout' %}" class="logout-btn">تسجيل الخروج</a>
+            </div>
+        </div>
+    </header>
+
+    <div class="dashboard-layout">
+        <aside class="sidebar">
+            <ul class="sidebar-menu">
+                <li>
+                    <a href="{% url 'admin_dashboard' %}">
+                        <span class="icon">📊</span>
+                        <span>لوحة التحكم</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'admin_add_doctor' %}">
+                        <span class="icon">👨‍🏫</span>
+                        <span>إضافة دكتور</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'admin_add_student' %}">
+                        <span class="icon">👨‍🎓</span>
+                        <span>إضافة طالب</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'admin_assign_subjects' %}">
+                        <span class="icon">📚</span>
+                        <span>توزيع المواد</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'admin_enroll_students' %}" class="active">
+                        <span class="icon">📝</span>
+                        <span>تسجيل الطلاب</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'admin_manage_users' %}">
+                        <span class="icon">👥</span>
+                        <span>إدارة المستخدمين</span>
+                    </a>
+                </li>
+            </ul>
+        </aside>
+
+        <main class="main-content">
+            <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 2rem;">
+                <a href="{% url 'admin_dashboard' %}" class="btn btn-outline" style="padding: 0.5rem 1rem;">
+                    ← العودة للوحة التحكم
+                </a>
+                <h1 class="page-title" style="margin-bottom: 0;">📝 تسجيل الطلاب في المواد</h1>
+            </div>
+
+            {% if messages %}
+            <div style="margin-bottom: 2rem;">
+                {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}"
+                    style="padding: 1rem; background: {% if message.tags == 'success' %}rgba(76, 175, 80, 0.1){% elif message.tags == 'error' %}rgba(244, 67, 54, 0.1){% else %}rgba(255, 152, 0, 0.1){% endif %}; border-radius: 8px; margin-bottom: 1rem; color: {% if message.tags == 'success' %}#4caf50{% elif message.tags == 'error' %}#f44336{% else %}#ff9800{% endif %};">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <div class="upload-card" style="margin-bottom: 2rem;">
+                <h3 style="color: var(--text-dark); margin-bottom: 1rem;">📝 تسجيل طالب في مادة</h3>
+                <p style="color: var(--text-gray); margin-bottom: 1rem;">
+                    يمكنك تسجيل الطلاب في المواد الدراسية يدوياً. اختر الطالب والمادة ثم اضغط "تسجيل".
+                </p>
+                
+                <form method="post" style="display: flex; gap: 1rem; align-items: flex-end; flex-wrap: wrap;">
+                    {% csrf_token %}
+                    <div style="flex: 1; min-width: 200px;">
+                        <select name="student_id" required 
+                                style="width: 100%; padding: var(--spacing-sm); border: 2px solid var(--border-gray); border-radius: var(--radius-md);">
+                            <option value="">اختر الطالب</option>
+                            {% for student in students %}
+                            <option value="{{ student.id }}">{{ student.get_full_name|default:student.username }} ({{ student.profile.student_id|default:'-' }})</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div style="flex: 1; min-width: 200px;">
+                        <select name="subject_id" required 
+                                style="width: 100%; padding: var(--spacing-sm); border: 2px solid var(--border-gray); border-radius: var(--radius-md);">
+                            <option value="">اختر المادة</option>
+                            {% for subject in subjects %}
+                            <option value="{{ subject.id }}">{{ subject.name }} ({{ subject.doctor.get_full_name|default:subject.doctor.username|default:'-' }})</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <button type="submit" name="action" value="enroll" class="btn btn-primary">تسجيل الطالب</button>
+                </form>
+            </div>
+
+            <div class="subjects-section">
+                <div class="section-header">
+                    <h2 class="section-title">📊 حالة التسجيل الحالية</h2>
+                </div>
+                
+                {% if subjects %}
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>المادة</th>
+                                <th>الدكتور المسؤول</th>
+                                <th>الطلاب المسجلين</th>
+                                <th>الإجراءات</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for subject in subjects %}
+                            <tr>
+                                <td><strong>{{ subject.name }}</strong></td>
+                                <td>
+                                    {% if subject.doctor %}
+                                        {{ subject.doctor.get_full_name|default:subject.doctor.username }}
+                                    {% else %}
+                                        <span style="color: #f44336;">غير محدد</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <span style="padding: 0.25rem 0.5rem; background: rgba(33, 150, 243, 0.1); color: #2196f3; border-radius: 4px; font-size: 0.875rem;">
+                                        {{ subject.enrollments.count }} طالب
+                                    </span>
+                                </td>
+                                <td>
+                                    <a href="{% url 'admin_subject_students' subject.id %}" class="btn-small">عرض الطلاب</a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="upload-card">
+                    <div style="text-align: center; padding: 2rem; color: #757575;">
+                        <div style="font-size: 3rem; margin-bottom: 1rem;">📚</div>
+                        <h3 style="color: #212121; margin-bottom: 0.5rem;">لا توجد مواد حالياً</h3>
+                        <p>قم بإضافة مواد أولاً من صفحة توزيع المواد.</p>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="subjects-section" style="margin-top: 2rem;">
+                <div class="section-header">
+                    <h2 class="section-title">👨‍🎓 الطلاب غير المسجلين</h2>
+                </div>
+                
+                {% if unenrolled_students %}
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>اسم الطالب</th>
+                                <th>البريد الإلكتروني</th>
+                                <th>الرقم الجامعي</th>
+                                <th>القسم</th>
+                                <th>المواد المسجلين</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for student in unenrolled_students %}
+                            <tr>
+                                <td><strong>{{ student.get_full_name|default:student.username }}</strong></td>
+                                <td>{{ student.email }}</td>
+                                <td>{{ student.profile.student_id|default:'-' }}</td>
+                                <td>{{ student.profile.department|default:'-' }}</td>
+                                <td>
+                                    <span style="padding: 0.25rem 0.5rem; background: rgba(255, 152, 0, 0.1); color: #ff9800; border-radius: 4px; font-size: 0.875rem;">
+                                        {{ student.enrollments.count }} مادة
+                                    </span>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="upload-card">
+                    <div style="text-align: center; padding: 2rem; color: #757575;">
+                        <div style="font-size: 3rem; margin-bottom: 1rem;">✅</div>
+                        <h3 style="color: #212121; margin-bottom: 0.5rem;">جميع الطلاب مسجلون</h3>
+                        <p>جميع الطلاب مسجلون في مواد دراسية.</p>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+
+        </main>
+    </div>
+{% endblock %}

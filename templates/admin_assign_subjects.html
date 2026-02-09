@@ -1,0 +1,178 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}توزيع المواد - نظام الجامعة{% endblock %}
+
+{% block content %}
+    <header class="header">
+        <div class="header-content">
+            <h1>🎓 نظام الجامعة - لوحة التحكم</h1>
+            <div class="header-user">
+                <div class="user-info">
+                    <div class="user-avatar">{{ user.username|slice:":1"|upper }}</div>
+                    <span>مرحباً، {{ user.get_full_name|default:user.username }}</span>
+                </div>
+                <a href="{% url 'logout' %}" class="logout-btn">تسجيل الخروج</a>
+            </div>
+        </div>
+    </header>
+
+    <div class="dashboard-layout">
+        <aside class="sidebar">
+            <ul class="sidebar-menu">
+                <li>
+                    <a href="{% url 'admin_dashboard' %}">
+                        <span class="icon">📊</span>
+                        <span>لوحة التحكم</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'admin_add_doctor' %}">
+                        <span class="icon">👨‍🏫</span>
+                        <span>إضافة دكتور</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'admin_add_student' %}">
+                        <span class="icon">👨‍🎓</span>
+                        <span>إضافة طالب</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'admin_assign_subjects' %}" class="active">
+                        <span class="icon">📚</span>
+                        <span>توزيع المواد</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'admin_manage_users' %}">
+                        <span class="icon">👥</span>
+                        <span>إدارة المستخدمين</span>
+                    </a>
+                </li>
+            </ul>
+        </aside>
+
+        <main class="main-content">
+            <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 2rem;">
+                <a href="{% url 'admin_dashboard' %}" class="btn btn-outline" style="padding: 0.5rem 1rem;">
+                    ← العودة للوحة التحكم
+                </a>
+                <h1 class="page-title" style="margin-bottom: 0;">📚 توزيع المواد الدراسية</h1>
+            </div>
+
+            {% if messages %}
+            <div style="margin-bottom: 2rem;">
+                {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}"
+                    style="padding: 1rem; background: {% if message.tags == 'success' %}rgba(76, 175, 80, 0.1){% elif message.tags == 'error' %}rgba(244, 67, 54, 0.1){% else %}rgba(255, 152, 0, 0.1){% endif %}; border-radius: 8px; margin-bottom: 1rem; color: {% if message.tags == 'success' %}#4caf50{% elif message.tags == 'error' %}#f44336{% else %}#ff9800{% endif %};">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <div class="upload-card" style="margin-bottom: 2rem;">
+                <h3 style="color: var(--text-dark); margin-bottom: 1rem;">➕ إضافة مادة جديدة</h3>
+                <form method="post" style="display: flex; gap: 1rem; align-items: flex-end; flex-wrap: wrap;">
+                    {% csrf_token %}
+                    <div style="flex: 1; min-width: 200px;">
+                        <input type="text" name="subject_name" required 
+                               placeholder="اسم المادة" 
+                               style="width: 100%; padding: var(--spacing-sm); border: 2px solid var(--border-gray); border-radius: var(--radius-md);">
+                    </div>
+                    <div style="flex: 1; min-width: 200px;">
+                        <textarea name="subject_description" 
+                                  placeholder="وصف المادة (اختياري)" 
+                                  style="width: 100%; padding: var(--spacing-sm); border: 2px solid var(--border-gray); border-radius: var(--radius-md); min-height: 40px; resize: vertical;"></textarea>
+                    </div>
+                    <div style="flex: 1; min-width: 200px;">
+                        <select name="doctor_id" required 
+                                style="width: 100%; padding: var(--spacing-sm); border: 2px solid var(--border-gray); border-radius: var(--radius-md);">
+                            <option value="">اختر الدكتور</option>
+                            {% for doctor in doctors %}
+                            <option value="{{ doctor.id }}">{{ doctor.get_full_name|default:doctor.username }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <button type="submit" name="action" value="add_subject" class="btn btn-primary">إضافة مادة</button>
+                </form>
+            </div>
+
+            <div class="subjects-section">
+                <div class="section-header">
+                    <h2 class="section-title">📚 المواد الحالية</h2>
+                </div>
+                
+                {% if subjects %}
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>اسم المادة</th>
+                                <th>الدكتور المسؤول</th>
+                                <th>الوصف</th>
+                                <th>عدد الطلاب</th>
+                                <th>الإجراءات</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for subject in subjects %}
+                            <tr>
+                                <td><strong>{{ subject.name }}</strong></td>
+                                <td>
+                                    {% if subject.doctor %}
+                                        {{ subject.doctor.get_full_name|default:subject.doctor.username }}
+                                    {% else %}
+                                        <span style="color: #f44336;">غير محدد</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if subject.description %}
+                                        {{ subject.description|truncatewords:10 }}
+                                    {% else %}
+                                        <span style="color: #757575;">لا يوجد وصف</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ subject.enrollments.count }}</td>
+                                <td>
+                                    <form method="post" style="display: inline;">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="subject_id" value="{{ subject.id }}">
+                                        <div style="display: flex; gap: 0.5rem; align-items: center;">
+                                            <select name="new_doctor_id" 
+                                                    style="padding: 0.25rem; border: 1px solid var(--border-gray); border-radius: 4px; font-size: 0.875rem;">
+                                                <option value="">اختر دكتور</option>
+                                                {% for doctor in doctors %}
+                                                <option value="{{ doctor.id }}" {% if subject.doctor and subject.doctor.id == doctor.id %}selected{% endif %}>
+                                                    {{ doctor.get_full_name|default:doctor.username }}
+                                                </option>
+                                                {% endfor %}
+                                            </select>
+                                            <button type="submit" name="action" value="assign_doctor" 
+                                                    class="btn-small" 
+                                                    style="background: var(--primary-blue);">
+                                                تحديث
+                                            </button>
+                                        </div>
+                                    </form>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="upload-card">
+                    <div style="text-align: center; padding: 2rem; color: #757575;">
+                        <div style="font-size: 3rem; margin-bottom: 1rem;">📚</div>
+                        <h3 style="color: #212121; margin-bottom: 0.5rem;">لا توجد مواد حالياً</h3>
+                        <p>قم بإضافة أول مادة دراسية للنظام.</p>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+
+        </main>
+    </div>
+{% endblock %}

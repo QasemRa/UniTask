@@ -27,7 +27,7 @@
                     </a>
                 </li>
                 <li>
-                    <a href="{% url 'doctor_subjects' %}">
+                    <a href="{% url 'doctor_subject_select' %}">
                         <span class="icon">📚</span>
                         <span>موادي</span>
                     </a>
@@ -42,6 +42,12 @@
                     <a href="{% url 'doctor_plagiarism' %}">
                         <span class="icon">🔍</span>
                         <span>كشف الانتحال</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'pdf_compare' %}">
+                        <span class="icon">📄</span>
+                        <span>مقارنة ملفات PDF</span>
                     </a>
                 </li>
             </ul>
@@ -116,7 +122,7 @@
                         <div class="subject-body" style="text-align: center; padding: 2rem;">
                             <div style="font-size: 3rem; margin-bottom: 1rem;">📚</div>
                             <h3 style="margin-bottom: 1rem;">عرض المواد</h3>
-                            <a href="{% url 'doctor_subjects' %}" class="btn btn-primary">عرض المواد</a>
+                            <a href="{% url 'doctor_subject_select' %}" class="btn btn-primary">اختيار المادة</a>
                         </div>
                     </div>
                     <div class="subject-card">

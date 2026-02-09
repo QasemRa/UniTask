@@ -1,0 +1,195 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}إدارة المستخدمين - نظام الجامعة{% endblock %}
+
+{% block content %}
+    <header class="header">
+        <div class="header-content">
+            <h1>🎓 نظام الجامعة - لوحة التحكم</h1>
+            <div class="header-user">
+                <div class="user-info">
+                    <div class="user-avatar">{{ user.username|slice:":1"|upper }}</div>
+                    <span>مرحباً، {{ user.get_full_name|default:user.username }}</span>
+                </div>
+                <a href="{% url 'logout' %}" class="logout-btn">تسجيل الخروج</a>
+            </div>
+        </div>
+    </header>
+
+    <div class="dashboard-layout">
+        <aside class="sidebar">
+            <ul class="sidebar-menu">
+                <li>
+                    <a href="{% url 'admin_dashboard' %}">
+                        <span class="icon">📊</span>
+                        <span>لوحة التحكم</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'admin_add_doctor' %}">
+                        <span class="icon">👨‍🏫</span>
+                        <span>إضافة دكتور</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'admin_add_student' %}">
+                        <span class="icon">👨‍🎓</span>
+                        <span>إضافة طالب</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'admin_assign_subjects' %}">
+                        <span class="icon">📚</span>
+                        <span>توزيع المواد</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'admin_enroll_students' %}">
+                        <span class="icon">📝</span>
+                        <span>تسجيل الطلاب</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'admin_manage_users' %}" class="active">
+                        <span class="icon">👥</span>
+                        <span>إدارة المستخدمين</span>
+                    </a>
+                </li>
+            </ul>
+        </aside>
+
+        <main class="main-content">
+            <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 2rem;">
+                <a href="{% url 'admin_dashboard' %}" class="btn btn-outline" style="padding: 0.5rem 1rem;">
+                    ← العودة للوحة التحكم
+                </a>
+                <h1 class="page-title" style="margin-bottom: 0;">👥 إدارة المستخدمين</h1>
+            </div>
+
+            {% if messages %}
+            <div style="margin-bottom: 2rem;">
+                {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}"
+                    style="padding: 1rem; background: {% if message.tags == 'success' %}rgba(76, 175, 80, 0.1){% elif message.tags == 'error' %}rgba(244, 67, 54, 0.1){% else %}rgba(255, 152, 0, 0.1){% endif %}; border-radius: 8px; margin-bottom: 1rem; color: {% if message.tags == 'success' %}#4caf50{% elif message.tags == 'error' %}#f44336{% else %}#ff9800{% endif %};">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <div class="subjects-section">
+                <div class="section-header">
+                    <h2 class="section-title">👨‍🏫 الدكاترة</h2>
+                </div>
+                
+                {% if doctors %}
+                <div class="table-container" style="margin-bottom: 2rem;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>الاسم</th>
+                                <th>البريد الإلكتروني</th>
+                                <th>المواد المسندة</th>
+                                <th>حالة الحساب</th>
+                                <th>الإجراءات</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for doctor in doctors %}
+                            <tr>
+                                <td><strong>{{ doctor.get_full_name|default:doctor.username }}</strong></td>
+                                <td>{{ doctor.email }}</td>
+                                <td>{{ doctor.teaching_subjects.count }}</td>
+                                <td>
+                                    <span style="padding: 0.25rem 0.5rem; background: rgba(76, 175, 80, 0.1); color: #4caf50; border-radius: 4px; font-size: 0.875rem;">
+                                        نشط
+                                    </span>
+                                </td>
+                                <td>
+                                    <form method="post" style="display: inline;">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="user_id" value="{{ doctor.id }}">
+                                        <button type="submit" name="action" value="toggle_doctor" 
+                                                class="btn-small" 
+                                                style="background: var(--warning-orange);">
+                                            تعطيل
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="upload-card">
+                    <div style="text-align: center; padding: 2rem; color: #757575;">
+                        <div style="font-size: 3rem; margin-bottom: 1rem;">👨‍🏫</div>
+                        <h3 style="color: #212121; margin-bottom: 0.5rem;">لا يوجد دكاترة حالياً</h3>
+                        <p>قم بإضافة أول دكتور للنظام.</p>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="subjects-section">
+                <div class="section-header">
+                    <h2 class="section-title">👨‍🎓 الطلاب</h2>
+                </div>
+                
+                {% if students %}
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>الاسم</th>
+                                <th>البريد الإلكتروني</th>
+                                <th>المواد المسجلين</th>
+                                <th>الواجبات المرفوعة</th>
+                                <th>حالة الحساب</th>
+                                <th>الإجراءات</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for student in students %}
+                            <tr>
+                                <td><strong>{{ student.get_full_name|default:student.username }}</strong></td>
+                                <td>{{ student.email }}</td>
+                                <td>{{ student.enrollments.count }}</td>
+                                <td>{{ student.submissions.count }}</td>
+                                <td>
+                                    <span style="padding: 0.25rem 0.5rem; background: rgba(76, 175, 80, 0.1); color: #4caf50; border-radius: 4px; font-size: 0.875rem;">
+                                        نشط
+                                    </span>
+                                </td>
+                                <td>
+                                    <form method="post" style="display: inline;">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="user_id" value="{{ student.id }}">
+                                        <button type="submit" name="action" value="toggle_student" 
+                                                class="btn-small" 
+                                                style="background: var(--warning-orange);">
+                                            تعطيل
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="upload-card">
+                    <div style="text-align: center; padding: 2rem; color: #757575;">
+                        <div style="font-size: 3rem; margin-bottom: 1rem;">👨‍🎓</div>
+                        <h3 style="color: #212121; margin-bottom: 0.5rem;">لا يوجد طلاب حالياً</h3>
+                        <p>قم بإضافة أول طالب للنظام.</p>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+
+        </main>
+    </div>
+{% endblock %}
