@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 """
 Test script to verify PDF text extraction works
 """
@@ -12,13 +11,11 @@ def test_extraction():
     """Test the enhanced PDF extraction"""
     print("Testing enhanced PDF text extraction...")
     
-    # Test with sample texts
     sample_texts = [
         "This is a test document about machine learning and artificial intelligence. Machine learning is a subset of AI that focuses on algorithms.",
         "Artificial intelligence and machine learning are transforming technology. AI encompasses various technologies including machine learning algorithms."
     ]
     
-    # Test similarity computation
     similarities = compute_similarity(sample_texts)
     
     print(f"Found {len(similarities)} similarities:")

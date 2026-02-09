@@ -7,7 +7,6 @@ django.setup()
 from django.contrib.auth.models import User
 from myapp.models import Profile
 
-# Create or get admin user
 try:
     admin_user = User.objects.create_superuser(
         username='admin',
@@ -15,7 +14,6 @@ try:
         password='Admin123!@#'
     )
     
-    # Create admin profile
     Profile.objects.create(
         user=admin_user,
         role='admin',

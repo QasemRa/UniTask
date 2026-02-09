@@ -14,7 +14,6 @@ def create_sample_data():
     print("CREATING SAMPLE DATA FOR UNIVERSITY SYSTEM")
     print("=" * 60)
     
-    # Create Doctors
     print("\n📚 Creating Doctors...")
     doctors_data = [
         {'username': 'dr_ahmed', 'first_name': 'أحمد', 'last_name': 'محمود', 'email': 'ahmed@university.edu'},
@@ -48,7 +47,6 @@ def create_sample_data():
         
         doctors.append(user)
     
-    # Create Subjects
     print("\n📖 Creating Subjects...")
     subjects_data = [
         {
@@ -131,11 +129,9 @@ def create_sample_data():
         
         students.append(user)
     
-    # Enroll Students in Subjects
     print("\n📝 Enrolling Students in Subjects...")
     enrollment_count = 0
     
-    # Enroll first 3 students in first 3 subjects
     for i, student in enumerate(students[:3]):
         for subject in subjects[:3]:
             enrollment, created = Enrollment.objects.get_or_create(
@@ -148,7 +144,6 @@ def create_sample_data():
             else:
                 print(f"  ℹ {student.username} already enrolled in {subject.name}")
     
-    # Enroll remaining students in all subjects
     for student in students[3:]:
         for subject in subjects:
             enrollment, created = Enrollment.objects.get_or_create(

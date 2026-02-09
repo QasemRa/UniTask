@@ -214,10 +214,10 @@ class DoctorView(View):
         subjects = Subject.objects.filter(doctor=request.user)
         
         if subjects.count() == 1:
-            # If doctor has only one subject, redirect to that subject
+
             return redirect(f'/doctor/subject/{subjects.first().id}/')
         else:
-            # If doctor has multiple subjects, redirect to selection page
+
             return redirect('/doctor/select-subject/')
 
     def post(self, request):
@@ -543,7 +543,7 @@ class DoctorSubjectStudentsView(View):
             subject=subject
         ).select_related('student').order_by('-enrolled_date')
         
-        # Get students not enrolled in this subject
+
         enrolled_student_ids = enrolled_students.values_list('student_id', flat=True)
         available_students = User.objects.filter(
             profile__role='student'
@@ -844,7 +844,7 @@ class AdminEnrollStudentsView(View):
         students = User.objects.filter(profile__role='student', profile__is_active=True)
         subjects = Subject.objects.all().prefetch_related('enrollments', 'doctor')
         
-        # Get students not enrolled in any subject
+
         unenrolled_students = []
         for student in students:
             if student.enrollments.count() == 0:
@@ -906,7 +906,7 @@ class AdminSubjectStudentsView(View):
             subject=subject
         ).select_related('student').order_by('-enrolled_date')
         
-        # Get students not enrolled in this subject
+
         enrolled_student_ids = enrolled_students.values_list('student_id', flat=True)
         available_students = User.objects.filter(
             profile__role='student',
@@ -989,30 +989,30 @@ class PDFCompareView(View):
             temp_files = []
             
             try:
-                # Process each uploaded PDF
+
                 for file in files:
                     file_names.append(file.name)
                     
-                    # Save file temporarily
+
                     with tempfile.NamedTemporaryFile(delete=False, suffix='.pdf') as temp_file:
                         for chunk in file.chunks():
                             temp_file.write(chunk)
                         temp_files.append(temp_file.name)
                 
-                # Extract text from all PDFs
+
                 for temp_file_path in temp_files:
                     text = extract_text_from_pdf(temp_file_path)
                     extracted_texts.append(text)
                 
-                # Compute similarities
+
                 similarities = compute_similarity(extracted_texts)
                 
-                # Enhance similarity results with file names
+
                 for sim in similarities:
                     sim['file1_name'] = file_names[sim['text1_index']]
                     sim['file2_name'] = file_names[sim['text2_index']]
                 
-                # Clean up temporary files
+
                 for temp_file_path in temp_files:
                     try:
                         os.unlink(temp_file_path)
@@ -1031,7 +1031,7 @@ class PDFCompareView(View):
                 return render(request, 'myapp/pdf_compare.html', context)
                 
             except Exception as e:
-                # Clean up temporary files in case of error
+
                 for temp_file_path in temp_files:
                     try:
                         os.unlink(temp_file_path)

@@ -6,10 +6,9 @@ import pytesseract
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
-# Set the path to the new Tesseract installation
+
 pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
 
-# Set TESSDATA_PREFIX environment variable
 os.environ['TESSDATA_PREFIX'] = r'C:\Program Files\Tesseract-OCR\tessdata'
 
 def preprocess_image_for_ocr(image):
@@ -20,16 +19,13 @@ def extract_text_from_pdf(pdf_path):
     """Enhanced text extraction with better support for Word-to-PDF files"""
     text = ""
     
-    # Enhanced text extraction for regular PDFs (especially Word-to-PDF)
     try:
         reader = PdfReader(pdf_path)
         for page_num, page in enumerate(reader.pages):
-            # Method 1: Standard text extraction
             extracted = page.extract_text()
             if extracted and extracted.strip():
                 text += f"\n--- Page {page_num + 1} (Standard) ---\n{extracted}\n"
             
-            # Method 2: Try get_text method (better for some PDFs)
             try:
                 if hasattr(page, 'get_text'):
                     alt_text = page.get_text()
@@ -38,7 +34,6 @@ def extract_text_from_pdf(pdf_path):
             except:
                 pass
             
-            # Method 3: Try extract_text with different parameters
             try:
                 if hasattr(page, 'extract_text'):
                     param_text = page.extract_text(extraction_mode="layout")
@@ -50,20 +45,17 @@ def extract_text_from_pdf(pdf_path):
     except Exception as e:
         print(f"Error extracting text with pypdf: {e}")
 
-    # If we got good text from standard methods, prioritize it
     standard_text = text.strip()
-    if len(standard_text) > 100:  # If we got substantial text
+    if len(standard_text) > 100:  
         return standard_text
     
-    # Otherwise, try OCR as fallback
     try:
-        # Convert PDF to images with high DPI for better OCR
+       
         images = convert_from_path(pdf_path, dpi=400)
         
         for i, image in enumerate(images):
             extracted_texts = []
             
-            # Configuration 1: Best for general text
             try:
                 general_text = pytesseract.image_to_string(
                     image,
@@ -74,7 +66,6 @@ def extract_text_from_pdf(pdf_path):
             except:
                 pass
             
-            # Configuration 2: Best for handwritten text
             try:
                 handwritten_text = pytesseract.image_to_string(
                     image,
@@ -85,7 +76,6 @@ def extract_text_from_pdf(pdf_path):
             except:
                 pass
             
-            # Configuration 3: Sparse text (excellent for handwritten)
             try:
                 sparse_text = pytesseract.image_to_string(
                     image,
@@ -96,7 +86,6 @@ def extract_text_from_pdf(pdf_path):
             except:
                 pass
             
-            # Configuration 4: Single column text
             try:
                 single_col_text = pytesseract.image_to_string(
                     image,
@@ -107,7 +96,6 @@ def extract_text_from_pdf(pdf_path):
             except:
                 pass
             
-            # Configuration 5: Auto detect (most flexible)
             try:
                 auto_text = pytesseract.image_to_string(
                     image,
@@ -118,7 +106,6 @@ def extract_text_from_pdf(pdf_path):
             except:
                 pass
             
-            # Configuration 6: Treat as single word
             try:
                 word_text = pytesseract.image_to_string(
                     image,
@@ -129,7 +116,6 @@ def extract_text_from_pdf(pdf_path):
             except:
                 pass
             
-            # Combine all extracted text from this page
             if extracted_texts:
                 page_text = "\n".join(extracted_texts)
                 text += f"\n--- Page {i+1} (OCR) ---\n{page_text}\n"
@@ -152,23 +138,21 @@ def compute_similarity(texts):
     if len(texts) < 2:
         return []
 
-    # Clean and preprocess texts
     processed_texts = []
     for text in texts:
         if text:
-            # Remove page separators and normalize
             cleaned = text.replace('--- Page', '').replace('---', '')
-            # Remove method labels
+
             cleaned = cleaned.replace('(Standard)', '').replace('(Alternative)', '').replace('(Modern OCR)', '')
-            # Remove extra whitespace and newlines
+
             cleaned = ' '.join(cleaned.split())
             
-            # Remove common English stop words
+
             stop_words = ['the', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'of', 'with', 'by', 'is', 'are', 'was', 'were', 'be', 'been', 'being', 'have', 'has', 'had', 'do', 'does', 'did', 'will', 'would', 'could', 'should', 'may', 'might', 'must', 'can', 'this', 'that', 'these', 'those', 'i', 'you', 'he', 'she', 'it', 'we', 'they', 'a', 'an', 'as', 'from', 'into', 'about', 'up', 'down', 'out', 'off', 'over', 'under', 'again', 'further', 'then', 'once']
             for stop_word in stop_words:
                 cleaned = cleaned.replace(f' {stop_word} ', ' ')
             
-            # Remove common Arabic stop words
+
             arabic_stop_words = ['في', 'من', 'إلى', 'على', 'مع', 'هذا', 'هذه', 'ذلك', 'تلك', 'و', 'ف', 'ب', 'ل', 'ك', 'كان', 'كانت', 'يكون', 'تكون', 'ليس', 'ليست', 'ما', 'ماذا', 'كيف', 'متى', 'أين', 'لماذا', 'كم', 'أي']
             for stop_word in arabic_stop_words:
                 cleaned = cleaned.replace(f' {stop_word} ', ' ')
@@ -177,15 +161,14 @@ def compute_similarity(texts):
         else:
             processed_texts.append("")
 
-    # Use TF-IDF with comprehensive parameters for mixed Arabic/English content
     vectorizer = TfidfVectorizer(
-        max_features=20000,  # Increased for better coverage
-        ngram_range=(1, 6),  # Include up to 6-grams for pattern matching
-        lowercase=False,  # Important for Arabic
+        max_features=20000,  
+        ngram_range=(1, 6),  
+        lowercase=False,  
         token_pattern=r'(?u)[\w\+\-\×\÷\=\√\∑\∏\∫\∞\≈\≠\≤\≥\π\θ\α\β\γ\δ\λ\μ\σ\φ\ψ\ω\.\,\;\:\!\?\(\)\[\]\{\}ابتثجحخدذرزسشصضطظعغفقكلمنهويءآأؤإئابةة]+',
-        min_df=1,  # Include all terms
+        min_df=1, 
         sublinear_tf=True,
-        analyzer='char_wb',  # Character-based for better OCR recognition
+        analyzer='char_wb', 
         strip_accents='unicode'
     )
     
@@ -197,7 +180,7 @@ def compute_similarity(texts):
         for i in range(len(texts)):
             for j in range(i + 1, len(texts)):
                 similarity = round(cosine_sim[i][j] * 100, 1)
-                if similarity > 0.1:  # Very low threshold for sensitive detection
+                if similarity > 0.1:  
                     results.append({
                         'text1_index': i,
                         'text2_index': j,
@@ -206,7 +189,6 @@ def compute_similarity(texts):
                         'text2_preview': processed_texts[j][:300] + "..." if len(processed_texts[j]) > 300 else processed_texts[j]
                     })
 
-        # Sort by similarity score
         results.sort(key=lambda x: x['similarity'], reverse=True)
         return results
         

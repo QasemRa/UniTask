@@ -108,7 +108,7 @@ C:\Users\kkaas\AppData\Local\Programs\Python\Python313\python.exe -m pip install
 ### 📞 التواصل
 
 - **📧 البريد الإلكتروني**: kkaasm887@gmail.com
-- **📱 الهاتف**: +967 819 3442 51
+- **📱 الهاتف**: 07819344251
 
 **مطور المشروع: Qasem Rafid Fouad**  
-**الترخيص: MIT License**
+
